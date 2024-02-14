@@ -9,7 +9,7 @@ You can install the development version of keeleR like this:
 ``` r
 
 install.packages("remotes")
-remotes::install_github("")
+remotes::install_github("https://github.com/Cdevenish/keeleR")
 
 ```
 
@@ -19,7 +19,6 @@ For a list of tutorials, run `contents()`
 
 ```
 library(keeleR)
-## Get list of tutorials
 contents()
 
 ```
@@ -28,7 +27,7 @@ contents()
 
 ```
 install.packages("learnr")
-learnr::run_tutorial("A0_First steps in R", package = "KeeleR")
+learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR")
 
 ```
 
