@@ -6,70 +6,225 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
+gradethis::gradethis_setup()
 knitr::opts_chunk$set(echo = FALSE)
+
+## make data dir and data files
+dir.create("data",  showWarnings = FALSE)
+write.csv(iris, "data/iris.csv", row.names = FALSE)
+
 ```
 
 
 ## Topic 1
 
-### Exercise 
+### First steps in the console
 
-*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+R is a programming environment, but it's also like a calculator. The following code calculates the answer to 1 + 1. Hit `Run Code` so that it performs the calculation.
 
-Write the R code required to add two plus two:
 
 ```{r two-plus-two, exercise=TRUE}
-
+1 + 1
 ```
 
-### Exercise with Code
+Now change it so it calculates 2 + 2 and run the code.
 
-*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+Well Done! You've just done your first calculation in R!!!
 
-Now write a function that adds any two numbers and then call it:
+### Getting to know R and RStudio
 
-```{r add-function, exercise=TRUE, exercise.lines = 5}
-add <- function() {
+The space where you just ran the code is called the Console. The console is one of the four windows we generally use with RStudio. RStudio is another piece of software that many people use to run R (R is actually another piece of software that also works on its own, however, RStudio makes certain aspects easier). 
+
+*Here's a screen shot of the default RStudio layout that you will see if you have just installed it.*
+
+![Rstudio screen shot](images/rstudio_screenshot.png){width=80%}
+
   
-}
-```
+You can change the layout of the windows and the colour of the code and background - which may it easier to see the code. But for the moment, we'll continue with the default settings.
+
+Let's look at each window:
+
+### Top left: Script window
+![Rstudio window 1](images/rstudio_screenshot_window1.png){width=60%}
+
+This window is where your script normally is. You will always write in your script, and save it, so that you keep a record of your analysis.
+
+### Bottom left: Console window
+![Rstudio window 2](images/rstudio_screenshot_window2.png){width=60%}
+
+This is the console. Here you will see the results of your analysis, but you generally won't write or copy text from here.
+
+### Top right: Environment window
+![Rstudio window 3](images/rstudio_screenshot_window3.png){width=60%}
+
+This window shows your 'environment', that is all the objects or functions you have loaded at the moment (we'll learn about those later). It's important that this is always clear at the beginning of a session. Remember to clear everything out before you start.
+
+### Bottom right: Plots/Help window
+![Rstudio window 4](images/rstudio_screenshot_window4.png){width=60%}
+
+This is where you will see plots or help files for functions. You can navigate between these windows using the tabs at the top. You can also see your folders and files here, like in a windows explorer window.
 
 ## Topic 2
 
-### Exercise with Hint
+### Looking at a data set
 
-*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+*Here's a data set that is built into R It's called `iris`.*
 
-Modify the following code to limit the number of rows printed to 5:
+The `head()` function shows you the first 6 rows of a data set. Run this code to see the first six lines of the `iris` data set:
 
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
+```{r data_iris1, exercise=TRUE, exercise.eval=FALSE}
+
+head(iris)
+
 ```
 
-```{r print-limit-hint}
-head(mtcars)
+`iris` is a `data.frame` - this is similar to table in excel. It looks like this in excel:
+
+![](images/iris_excel.png){width=40%}
+
+The data set has 5 columns and 150 rows. You can see this with the function `str()`. This function is useful for checking your data after you import it. Run the code to see the structure of this data set:
+
+```{r data_iris2, exercise=TRUE, exercise.eval=FALSE}
+str(iris)
+
 ```
 
-### Quiz
+This data set contains measurements of sepals and petals of four different species of iris flower. The first four columns are the numeric measurements, and the last is the name of the species. You can see the data types in the result of the function above.
 
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+The `str()` function tells you that the `iris` object is a `data frame` with 150 observations (rows) and 5 variables (columns), it shows you the column names, and the type of data in each column: `num` is numeric, for the measurements, and `Factor` is a categorical variable for the species name.
 
-Some questions to verify that you understand the purposes of various base and recommended R packages:
 
-```{r quiz}
+### Your turn!
+
+*The `trees` data set is another inbuilt data set in R. Write code here to see the first 6 lines of the `trees` data set*
+
+```{r trees1, exercise = TRUE}
+
+
+
+```
+
+```{r trees1-solution, exercise.reveal_solution = TRUE}
+
+head(trees)
+
+```
+
+*Now use the `str()` to see how many rows and columns it has.*
+
+```{r trees2, exercise = TRUE}
+
+
+```
+
+```{r trees2-solution, exercise.reveal_solution = TRUE}
+
+str(trees)
+
+```
+
+### Quiz time!!
+
+```{r quiz1}
 quiz(
-  question("Which package contains functions for installing other R packages?",
-    answer("base"),
-    answer("tools"),
-    answer("utils", correct = TRUE),
-    answer("codetools")
+  question_numeric("How many rows does the trees data set have?",
+                   answer(31, correct = TRUE)
   ),
-  question("Which of the R packages listed below are used to create plots?",
-    answer("lattice", correct = TRUE),
-    answer("tools"),
-    answer("stats"),
-    answer("grid", correct = TRUE)
-  )
+  question("What are the names of the columns of the trees data set?",
+    answer("Girth", correct = TRUE),
+    answer("height"),
+    answer("Volume", correct = TRUE),
+    answer("Mass"),
+    answer("Height", correct= TRUE)
+  ),
+  question_radio("What is the height of the third tree in the data set?",
+                 answer(65),
+                 answer(63, correct = TRUE),
+                 answer(31),
+                 answer(10.2),
+                 answer(8.8),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE)
+  
 )
 ```
 
+
+## Topic 3
+
+### Assigning values to objects in R
+
+Data sets or groups of variables (often called objects) can either be created in R, or imported. Normally, we would begin by importing a data set, and then throughout the analysis we would create new objects, based on the original data. To create any object in R, we need to assign a data value to a named object. For example, we could create a variable called `data1` and give it a value of 10.
+
+```{r objects1, exercise = TRUE, exercise.eval = TRUE}
+
+data1 <- 10
+
+```
+
+If we type in the name of our object, and press run, we will see its value in the console. Type `data1` in the box below and press run.
+
+```{r objects2, exercise = TRUE, exercise.setup = "objects1"}
+
+
+```
+
+
+Note that to assign the value of 10 to our new object `data1`, we have used an arrow pointing to the left ` <- `. This symbol is written as the `less than` sign followed by, without any spaces, the `minus` sign.
+
+Your turn! Create an object called data4 and give it a value of 25. Run your code first and check it's working before you submit your answer.
+
+```{r objects3, exercise = TRUE}
+
+
+```
+
+```{r objects3-check}
+grade_this({
+  if(! "data4" %in% ls(name = .envir_result)){
+    fail("You didn't create an object called data4. Try again!")
+  }
+  
+  if(get("data4", envir = .envir_result) != 25){
+    fail("Your object data4 doesn't have the value of 25")
+  }
+  pass()
+})
+
+
+```
+
+
+## Topic 4
+
+### Importing data into R
+
+The `iris` data set was inbuilt. However, most of the time, we will typically collect data, organise it in excel, and then import it into R.
+One of the easiest ways to do this is to save the excel spreadsheet as a `.csv` file and then import this.
+
+*Here we have some data from a survey of oak galls on Penduculate and Sessile oaks, surveyed at upland and lowland elevations*
+
+This is the data set in excel:
+
+![](images/oak_excel.png){width=60%}
+
+The file has already been saved as `oak_galls.csv` and is located in a folder called `data`.
+
+![](images/excel_to_csv.png){width=50%}
+
+We can use the `read.csv()` function to read the csv file into R. When we create a new object in R, we have to give it name. A sensible name is short, but descriptive of the data. Avoid using any punctuation in your name apart from underscores. Here, we will call the data set `oaks`.
+
+Run the code to import the data. Note that the path to the file is written in double quotes "".
+
+```{r galls1, exercise = TRUE}
+
+oaks <- read.csv("data/oak_galls.csv")
+
+```
+
+*Now use the `head()` and `str()` functions to check the data.*
+
+```{r galls2, exercise = TRUE, exercise.setup = "galls1"}
+
+
+```

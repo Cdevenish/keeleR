@@ -8,4 +8,4 @@ Description: This package primarily houses tutorials built with the learnR packa
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
