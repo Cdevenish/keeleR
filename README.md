@@ -1,6 +1,6 @@
 # keeleR
 
-KeeleR is package for R tutorials.
+KeeleR is package for R tutorials for Keele University modules.
 
 ## Installation
 
@@ -15,11 +15,11 @@ remotes::install_github("https://github.com/Cdevenish/keeleR")
 
 ## Example
 
-For a list of tutorials, run `contents()`
+For a list of tutorials check out the home page:
 
 ```
 library(keeleR)
-contents()
+help(package = keeleR)
 
 ```
 
@@ -27,6 +27,8 @@ contents()
 
 ```
 install.packages("learnr")
+
+## for example, to run the first tutorial:
 learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR")
 
 ```

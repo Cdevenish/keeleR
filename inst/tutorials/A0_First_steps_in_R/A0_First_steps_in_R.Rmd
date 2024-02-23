@@ -249,7 +249,7 @@ The most basic plot function is .... `plot()`!! We can use this to produce a sca
 
 ```{r plot1, exercise = TRUE, exercise.setup = "galls1"}
 
-plot(oaks$species, oaks$galls)
+plot(oaks$height, oaks$galls)
 
 ```
 
