@@ -9,10 +9,6 @@ library(learnr)
 gradethis::gradethis_setup()
 knitr::opts_chunk$set(echo = FALSE)
 
-## make data dir and data files
-dir.create("data",  showWarnings = FALSE)
-write.csv(iris, "data/iris.csv", row.names = FALSE)
-
 ```
 
 
@@ -228,3 +224,102 @@ oaks <- read.csv("data/oak_galls.csv")
 
 
 ```
+
+```{r galls2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+
+head(oaks)
+
+str(oaks)
+
+```
+
+This data set has four variables (columns) and 60 observations (rows):  
+- The `species` column contains the name of the species  
+- The `terrain` column differentiates between lowland and upland sites  
+- The `height` column give tree height in metres  
+- The `galls` column gives the number of oak galls found on each tree  
+
+## Topic 5
+
+### Simple plots and accessing variables in data frames
+
+One of the first things to do after importing and checking your data is to plot it. This is a further chance to spot any mistakes in importing it to R, and gives you a chance to start thinking about your research questions.
+
+The most basic plot function is .... `plot()`!! We can use this to produce a scatter plot. For example, let's see if the height of the trees is related to the number of galls found on them.
+
+```{r plot1, exercise = TRUE, exercise.setup = "galls1"}
+
+plot(oaks$species, oaks$galls)
+
+```
+
+**Remember a scatterplot shows the relationship between two numeric or continuous variables**
+
+Look at the above code. `oaks` is the name of the data frame, and `species` and `galls` are names of columns in the data frame. Note that we can access a column by using the `$` sign between the dataframe name and column name.
+
+Write the code below to print the data in the `height` column. Run the code.
+
+```{r plot2, exercise = TRUE, exercise.setup = "galls1"}
+
+```
+
+```{r plot2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+
+oaks$height
+
+```
+
+We can apply functions to columns (or vectors) of data frames. For example, what's the mean height of all the trees in the data set? Run the code to find out.
+
+```{r mean1, exercise = TRUE, exercise.setup = "galls1"}
+
+mean(oaks$height)
+
+```
+
+Now calculate the mean number of galls on all the trees. Write the code below and run it.
+
+```{r mean2, exercise = TRUE, exercise.setup = "galls1"}
+
+
+
+```
+
+
+```{r mean2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+
+mean(oaks$galls)
+
+```
+
+
+
+## Topic 6
+
+### More simple plots
+
+```{r boxplot1, exercise = TRUE}
+
+boxplot(height ~ species, data = oaks)
+
+```
+
+What does the above boxplot show you?
+
+**Remember a boxplot shows the relationship between a numeric or continous and a categorical variable**
+
+
+By copying adapting the above code, can you draw a boxplot to show how gall number compares between upland and lowland observations. Write your code in the box below and press run to see the boxplot.
+
+```{r boxplot2, exercise = TRUE, exercise.setup = "galls1"}
+
+
+```
+
+
+```{r boxplot2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+
+boxplot(galls ~ terrain, data = oaks)
+
+```
+
