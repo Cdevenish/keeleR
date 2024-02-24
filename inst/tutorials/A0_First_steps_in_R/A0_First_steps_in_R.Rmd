@@ -225,7 +225,7 @@ oaks <- read.csv("data/oak_galls.csv")
 
 ```
 
-```{r galls2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r galls2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
 
 head(oaks)
 
@@ -263,7 +263,7 @@ Write the code below to print the data in the `height` column. Run the code.
 
 ```
 
-```{r plot2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r plot2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
 
 oaks$height
 
@@ -286,7 +286,7 @@ Now calculate the mean number of galls on all the trees. Write the code below an
 ```
 
 
-```{r mean2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r mean2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
 
 mean(oaks$galls)
 
@@ -298,7 +298,7 @@ mean(oaks$galls)
 
 ### More simple plots
 
-```{r boxplot1, exercise = TRUE}
+```{r boxplot1, exercise = TRUE, exercise.setup = "galls1"}
 
 boxplot(height ~ species, data = oaks)
 
@@ -317,7 +317,7 @@ By copying adapting the above code, can you draw a boxplot to show how gall numb
 ```
 
 
-```{r boxplot2-solution, exercise = TRUE, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r boxplot2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
 
 boxplot(galls ~ terrain, data = oaks)
 
