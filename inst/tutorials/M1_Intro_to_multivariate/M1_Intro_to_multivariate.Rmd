@@ -1,0 +1,230 @@
+---
+title: "Intro to multivariate data in R"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Topic 1
+
+### What is multivariate data?
+
+
+```{r prelims}
+library(vegan)
+data(dune); data(dune.env)
+data(sipoo)
+data(varechem); data(varespec)
+data(BCI); data(BCI.env)
+BCI_trees <- BCI[1:25, 1:40]
+BCI_env <- BCI.env[1:25,]
+dune.pa <- (dune>1)*1
+row.names(dune.pa) <- sprintf("site%02d", 1:nrow(dune.pa))
+
+varespec_pa <- (varespec >0)*1
+
+```
+
+In ecology, multivariate data often means we have data for many different species, either presence/absence or some kind of count, at many different sites, as well as environmental data for each site (e.g. measured variables such as elevation, habitat type, chemical properties, of a site).
+
+### Data format
+
+#### Species by sample/site matrix
+Normally, species are in the columns, along the top, and samples or sites are down the left hand side in the rows.
+
+Here, we have presence or absence of 30 plant species from a dune meadow. There are observations of 30 different species at 20 sites. 
+
+```{r duneData}
+
+head(dune.pa)
+
+```
+
+Often, we have environmental data or variables, either measured at each site, or obtained from remote sensing. These are also organised in a similar matrix, but with the environmental variables in the columns, and the sites, again, in the rows. There should always be the same number of sites as for your species data.
+
+Run this code to see the first six lines of the data set:
+
+```{r envData, exercise = TRUE}
+
+head(dune.env)
+
+```
+
+#### What are the issues with multivariate data?
+
+Let's say we are interested in the effect of the environmental conditions on the presence or absence of species. If we have a small number of species of interest, we could look at scatterplots or boxplots, comparing the environmental variable with each species occurrence. 
+
+e.g. Here we look at the effect of stand age and Phosphorus in the soil on Vaccinium viti:
+
+![](images/box_scatter.png){width=30%}
+However, in our data set, we have 36 species. This means 36 plots for each environmental variable. This would be difficult to evaluate, and also causes statistical problems, if we wanted to test the significance of each relationship as well.
+
+![](images/Forest_boxplot_36.png){width=40%}
+
+![](images/P_scatter_36.png){width=40%}
+
+
+So we need another strategy to analyse this data ... multivariate analysis methods!!
+
+
+
+## Topic 3
+
+### Summary information about the data
+
+#### Species richness
+But before we start any more complex analysis, always attempt to plot or review your data.
+
+We can start by looking at species richness. Either overall species richness, or species richness at each site.
+As we have presence absence data, we can simply sum the presence absence values across the rows, giving a total number of species present at each site.
+
+Note that we are displaying only the species richness for each site as a single row.
+
+```{r spRich1, exercise = TRUE}
+
+rowSums(dune.pa)
+
+## Or using the vegan function
+vegan::specnumber(dune.pa)
+
+```
+
+If we had count data for each site, then we could convert to presence/absence prior to summing. Note that we can perform an operation (e.g. > on the whole matrix at once - if this is numeric data). Here, for example, we have data on tree counts at Barro Colorado Island in Panama (`BCI_trees`) at 1-hectare plots. There are 25 plots (rows), numbered 1 to 25, and 40 tree species.
+
+*Your turn* Write the code to view the first 6 lines of the data set called `BCI_trees`:
+
+```{r spRich_count, exercise = TRUE}
+
+
+```
+
+```{r spRich_count-solution}
+
+head(BCI_trees)
+
+```
+
+
+We can convert this to presence/absence as follows. Note we are creating a new variable called `BCI_tree_pa` on the left hand side of the assign symbol `<-`.
+
+```{r bci_pa, exercise = TRUE, exercise.eval = TRUE}
+
+BCI_trees_pa <- (BCI_trees>0)*1
+
+```
+
+*Your turn*
+Use the same code as above to look at the first 6 lines of this presence/absence data set:
+
+```{r bci_pa_hd, exercise = TRUE, exercise.setup = "bci_pa"}
+
+```
+
+Calculate the species richness by site for the `bci_trees_pa` data set and then answer the questions below.
+
+```{r spRich2, exercise = TRUE, exercise.setup = "bci_pa"}
+
+
+```
+
+
+```{r spRich2-solution, exercise.setup = "bci_pa"}
+
+rowSums(BCI_trees_pa)
+```
+
+```{r sipoo_Q1}
+
+quiz(
+  question_numeric("How many species of trees are there in plot 14?",
+                   answer(16, correct = TRUE)),
+  question_radio("How would you calculate the mean number of species across the 25 plots? Which code is correct?",
+                 answer("rowSums(BCI_trees_pa)"),
+                 answer("mean(rowSums(BCI_trees_pa))", correct = TRUE),
+                 answer("mean(BCI_trees_pa)"),
+                 answer("mean(BCI_trees)"),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_numeric("Now calculate the mean number of species across the 25 plots?\nHint: use the correct function in the code box above.",
+                   answer(15.48, correct = TRUE),
+                   tolerance = 0.5),
+  
+)
+
+```
+
+
+### Prevalence
+Another useful metric to review prior to starting any further analysis is the prevalence of species across sites. In other words, at how many sites are species present? Are they common (present at almost all sites) or rare (present at very few sites). For some types of analysis we might want to remove any species that are only present at one or two sites (or none), or at least, evaluate the effects of including rare species in the results of the analysis. That requires us to perform the analysis with and without the rare species.
+
+Again, due to the format of our data, we can simply sum down the columns this time to obtain a value for how many sites each species is present at. Here we show this with the plant species on the sand dunes again.
+
+```{r spPrev, exercise = TRUE}
+
+colSums(dune.pa)
+
+```
+
+Are there any species with few records? Or any species not present at any site?
+
+*Your turn: Calculate species richness per site and prevalence per species on this data set.*
+
+The data, `varespec_pa` are presence/absence values for 44 species of plants from the understorey vegetation of dry *Pinus sylvestris* forests. Complete the following code to show richness and prevalence.
+
+```{r spRich_ex, exercise = TRUE, exercise.eval = TRUE}
+
+head(varespec_pa)
+
+```
+
+```{r spRich_ex-solution}
+
+head(varespec_pa)
+
+rowSums(varespec_pa)
+colSums(varespec_pa)
+
+```
+
+
+
+
+## Ordination methods 
+### Non-metric Multidimensional scaling (NMDS)
+
+```{r nmds1, exercise = TRUE}
+
+nmds <- vegan::metaMDS(dune, distance = "bray", k = 2, try = 50, trymax = 50, trace = 0)
+
+nmds
+
+```
+
+A simple plot of the ordination (remember we only asked for two dimensions (two axes))
+
+```{r nmds2, exercise = TRUE}
+plot(nmds, display = "sites")
+
+```
+
+Sites that are closer together are more similar to each other in terms of species composition.
+
+We can also relate environmental variables to the ordination, and start to look for patterns that might explain some of the similarity. e.g. we might be able to identify environmental gradients along ordination axes.
+
+
+```{r envFit, exercise = TRUE}
+
+fit <- envfit(nmds, dune.env)
+
+pl <- ordiplot(nmds, type = "none")
+points(pl, "sites", pch = 16)
+ordihull(pl, groups = dune.env$Management)
+
+```
+
+

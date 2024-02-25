@@ -6,7 +6,6 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-gradethis::gradethis_setup()
 knitr::opts_chunk$set(echo = FALSE)
 
 ```
@@ -168,28 +167,24 @@ If we type in the name of our object, and press run, we will see its value in th
 
 Note that to assign the value of 10 to our new object `data1`, we have used an arrow pointing to the left ` <- `. This symbol is written as the `less than` sign followed by, without any spaces, the `minus` sign.
 
-Your turn! Create an object called data4 and give it a value of 25. Run your code first and check it's working before you submit your answer.
+Your turn! Create an object called `data4` and give it a value of 25. Run your code first and check it's working before you submit your answer.
 
 ```{r objects3, exercise = TRUE}
 
 
 ```
 
-```{r objects3-check}
-grade_this({
-  if(! "data4" %in% ls(name = .envir_result)){
-    fail("You didn't create an object called data4. Try again!")
-  }
-  
-  if(get("data4", envir = .envir_result) != 25){
-    fail("Your object data4 doesn't have the value of 25")
-  }
-  pass()
-})
-
-
+```{r objects3-hint-1}
+data4 ...
 ```
 
+```{r objects3-hint-2}
+data4 <- ...
+```
+
+```{r objects3-hint-3}
+data4 <- 25
+```
 
 ## Topic 4
 
@@ -225,7 +220,7 @@ oaks <- read.csv("data/oak_galls.csv")
 
 ```
 
-```{r galls2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r galls2-solution, exercise.reveal_solution = TRUE}
 
 head(oaks)
 
@@ -263,7 +258,7 @@ Write the code below to print the data in the `height` column. Run the code.
 
 ```
 
-```{r plot2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r plot2-solution, exercise.reveal_solution = TRUE}
 
 oaks$height
 
@@ -286,7 +281,7 @@ Now calculate the mean number of galls on all the trees. Write the code below an
 ```
 
 
-```{r mean2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r mean2-solution, exercise.reveal_solution = TRUE}
 
 mean(oaks$galls)
 
@@ -317,7 +312,7 @@ By copying adapting the above code, can you draw a boxplot to show how gall numb
 ```
 
 
-```{r boxplot2-solution, exercise.setup = "galls1", exercise.reveal_solution = TRUE}
+```{r boxplot2-solution, exercise.reveal_solution = TRUE}
 
 boxplot(galls ~ terrain, data = oaks)
 

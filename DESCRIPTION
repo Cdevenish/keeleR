@@ -2,10 +2,11 @@ Package: keeleR
 Title: R tutorials for Keele University modules
 Version: 0.0.0.9000
 Authors@R: 
-    person("Christian", "Devenish", , "c.devenish@keele.ac.uk", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person(given = "Christian", family = "Devenish", email = "c.devenish@keele.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5249-0844"))
 Description: This package primarily houses tutorials built with the learnR package. See contents() for a list of these.
 License: GPL (>= 3)
+Imports: learnr, shiny (>= 1.0.0), vegan
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
