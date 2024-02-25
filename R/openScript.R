@@ -5,6 +5,7 @@
 #' @param script Character vector with name of R script in `extdata` folder in
 #' package or full path to existing r script.
 #' @returns No value - side effect of opening a script in default application.
+#' @export
 openScript <- function(script){
 
   if(!file.exists(script)){
