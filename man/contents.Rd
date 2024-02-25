@@ -6,10 +6,10 @@
 \usage{
 contents()
 }
+\value{
+No value - prints to console.
+}
 \description{
 This package is primarily designed to house R tutorials using the \code{learnR} package
 This function will print a list of all the tutorials currently included in the package.
-}
-\details{
-There are no arguments.
 }
