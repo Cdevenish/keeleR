@@ -10,7 +10,7 @@ openScript <- function(script){
 
   if(!file.exists(script)){
 
-    script <- system.file("extdata", script, package = "keeleR", mustWork = TRUE)
+    script <- system.file("extdata/scripts", script, package = "keeleR", mustWork = TRUE)
 
   }
   shell.exec(script)

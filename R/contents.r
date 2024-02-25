@@ -8,7 +8,7 @@
 #'
 contents <- function(){
 
-  dirs <- list.dirs("inst/tutorials", recursive = FALSE)
+  dirs <- list.dirs("tutorials", recursive = FALSE)
   tuts <- basename(dirs)
   tuts <- gsub("_", " ", tuts)
 

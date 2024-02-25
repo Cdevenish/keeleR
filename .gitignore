@@ -9,7 +9,7 @@
 keeleR.Rproj
 
 ## any html renders of markdown in the tutorials folder or files directories
-inst/tutorials/*/*.hmtl
+inst/tutorials/*/*.html
 inst/tutorials/*/*_files/
 
 ## working
