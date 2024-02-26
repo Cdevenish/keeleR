@@ -7,45 +7,45 @@ runtime: shiny_prerendered
 ```{r setup, include=FALSE}
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
-```
 
-
-## Topic 1
-
-### What is multivariate data?
-
-
-```{r prelims}
 library(vegan)
 data(dune); data(dune.env)
 data(sipoo)
 data(varechem); data(varespec)
+
+
 data(BCI); data(BCI.env)
 BCI_trees <- BCI[1:25, 1:40]
 BCI_env <- BCI.env[1:25,]
-dune.pa <- (dune>1)*1
+dune.pa <- data.frame((dune[1:15, 1:10]>1)*1)
 row.names(dune.pa) <- sprintf("site%02d", 1:nrow(dune.pa))
+dune.env <- dune.env[1:15, ]
 
 varespec_pa <- (varespec >0)*1
 
+mite.env <- mite.env[,c("SubsDens", "WatrCont", "Shrub", "Topo")]
+
 ```
+
+
+## 1. About multivariate data
+
+### What is multivariate data?
 
 In ecology, multivariate data often means we have data for many different species, either presence/absence or some kind of count, at many different sites, as well as environmental data for each site (e.g. measured variables such as elevation, habitat type, chemical properties, of a site).
 
 ### Data format
 
 #### Species by sample/site matrix
-Normally, species are in the columns, along the top, and samples or sites are down the left hand side in the rows.
+Normally, species are in the columns, along the top, and samples or sites are down the left hand side in the rows. However, it can also be the other way around.
 
-Here, we have presence or absence of 30 plant species from a dune meadow. There are observations of 30 different species at 20 sites. 
+Here, we have presence (1) or absence (0) of 10 plant species from a dune meadow. There are observations of 10 different species at 15 sites. Run the code to see the first six lines of the data set:
 
-```{r duneData}
-
+```{r duneData, exercise = TRUE}
 head(dune.pa)
-
 ```
 
-Often, we have environmental data or variables, either measured at each site, or obtained from remote sensing. These are also organised in a similar matrix, but with the environmental variables in the columns, and the sites, again, in the rows. There should always be the same number of sites as for your species data.
+Often, we have environmental data or variables, either measured at each site, or obtained from other sources, e.g. remote sensing. These are also organised in a similar matrix, but with the environmental variables in the columns, and the sites, again, in the rows. There should always be the same number of sites as for your species data.
 
 Run this code to see the first six lines of the data set:
 
@@ -57,23 +57,20 @@ head(dune.env)
 
 #### What are the issues with multivariate data?
 
-Let's say we are interested in the effect of the environmental conditions on the presence or absence of species. If we have a small number of species of interest, we could look at scatterplots or boxplots, comparing the environmental variable with each species occurrence. 
+Let's say we are interested in the effect of the environmental conditions on the presence or absence of species. If we have a small number of species of interest, we could look at **scatterplots** or **boxplots**, comparing the environmental variable with each species' occurrence. 
 
-e.g. Here we look at the effect of stand age and Phosphorus in the soil on Vaccinium viti:
+For example, we have data on the presence/absence of species of plants from the understorey vegetation of dry *Pinus sylvestris* forests in Finland as well as data on the soil characteristics, including some soil chemistry. Here we look at the effect of stand age and Phosphorus in the soil on *Vaccinium vitis*, using a scatterplot and boxplot, respectively:
 
-![](images/box_scatter.png){width=30%}
-However, in our data set, we have 36 species. This means 36 plots for each environmental variable. This would be difficult to evaluate, and also causes statistical problems, if we wanted to test the significance of each relationship as well.
+![](images/box_scatter.png){width=60%}
 
-![](images/Forest_boxplot_36.png){width=40%}
+However, in our data set, if we had 36 species, that would mean 36 plots for each environmental variable. This would be difficult to evaluate, and also causes statistical problems, if we wanted to test the significance of each relationship as well. Here we just have two environmental variables...
 
-![](images/P_scatter_36.png){width=40%}
-
+![](images/Forest_boxplot_36.png){width=45%} ![](images/P_scatter_36.png){width=45%}
 
 So we need another strategy to analyse this data ... multivariate analysis methods!!
 
 
-
-## Topic 3
+## 2. First steps with multivariate data
 
 ### Summary information about the data
 
@@ -133,14 +130,13 @@ Calculate the species richness by site for the `bci_trees_pa` data set and then 
 ```
 
 
-```{r spRich2-solution, exercise.setup = "bci_pa"}
-
+```{r spRich2-solution}
 rowSums(BCI_trees_pa)
 ```
 
-```{r sipoo_Q1}
+```{r sipoo_Q1, echo = FALSE}
 
-quiz(
+quiz(caption = "Quiz 1",
   question_numeric("How many species of trees are there in plot 14?",
                    answer(16, correct = TRUE)),
   question_radio("How would you calculate the mean number of species across the 25 plots? Which code is correct?",
@@ -152,8 +148,7 @@ quiz(
                  allow_retry = TRUE),
   question_numeric("Now calculate the mean number of species across the 25 plots?\nHint: use the correct function in the code box above.",
                    answer(15.48, correct = TRUE),
-                   tolerance = 0.5),
-  
+                   tolerance = 0.5)
 )
 
 ```
@@ -194,37 +189,129 @@ colSums(varespec_pa)
 
 
 
-## Ordination methods 
+## 3. Ordination methods 
 ### Non-metric Multidimensional scaling (NMDS)
+
+Ordination is a technique often used to visualise multivariate data. We can look for groupings (sites that are similar to each other) and also overlay other variables, e.g. environmental variables in an attempt to look at what may be behind differences between groups of sites.
+
+Here we are looking at a data set of 25 species of Oribatid mites collected over 70 sampling sites in an area 2.5 m x 10 m in size. There are also five environmental variables with data for each site, either numeric (substrate density, water content) or categorical (substrate type, three classes of shrub density, microtopography type).
+
+The data is included in the `vegan` package and you can read about it on the help page in R `?mite`
+
+Lool at how the function is used below. We put our data set (as a matrix of species occurrences) first, then some settings. The most important are how many axes we want (`k`) and what distance metric we want to use (`distance`).
 
 ```{r nmds1, exercise = TRUE}
 
-nmds <- vegan::metaMDS(dune, distance = "bray", k = 2, try = 50, trymax = 50, trace = 0)
+# NMDS ordination - 2 axes (k = 2)
+nmds <- vegan::metaMDS(mite, distance = "bray", k = 2, try = 100, trymax = 500, trace = 0)
 
 nmds
 
 ```
 
-A simple plot of the ordination (remember we only asked for two dimensions (two axes))
+The key information from the nmds result is that a solution was reached (multiple times) and the stress value is < 0.3. Stress values indicate how well the data fit to the number of dimensions. As a general rule of thumb (Clarke, 1993), stress values can be evaluated as:  
+  - < 0.05 indicates an excellent fit  
+  - < 0.10 good  
+  - < 0.20 ok  
+  - > 0.20 use with care  
+  - > 0.35 poor   
 
-```{r nmds2, exercise = TRUE}
+
+A simple plot of the ordination (remember we only asked for two axes)
+
+```{r nmds2, exercise = TRUE, exercise.setup = "nmds1"}
 plot(nmds, display = "sites")
 
 ```
 
 Sites that are closer together are more similar to each other in terms of species composition.
 
-We can also relate environmental variables to the ordination, and start to look for patterns that might explain some of the similarity. e.g. we might be able to identify environmental gradients along ordination axes.
+It can help to interpret the data if we colour the points, add ellipses or add centroids according to groupings contained in the data. For example, the mite data has groups for shrub type and topography. We can use these to colour the points.
 
 
-```{r envFit, exercise = TRUE}
+Here we will colour the points by the different levels in the microtopography. These are "Blanket" or "Hummock". You can check this with the `levels` function - if the variable is a `factor`.
 
-fit <- envfit(nmds, dune.env)
+```{r miteGroups1, exercise = TRUE}
 
-pl <- ordiplot(nmds, type = "none")
-points(pl, "sites", pch = 16)
-ordihull(pl, groups = dune.env$Management)
+levels(mite.env$Topo)
+
+```
+
+Now we can use this factor with the `col` argument in the `points` function to colour our sites by microtopography type. 
+When we plot ordinations in the `vegan` package, we can build the plot up using the `ordiplot` function to plot the axes, then `points`, and then add either ellipses or other environmental variables.
+
+```{r miteGroups2, exercise = TRUE, exercise.setup = "nmds1"}
+
+ordiplot(nmds, type = "n")
+points(nmds, "sites", pch = 16, col = mite.env$Topo)
+
+```
+
+Black points are at "Blanket" sites, whereas red points are at "Hummock" sites.
+
+Remember that the ordination we performed above only used the information from the counts of each species at the 70 sites. Is there a pattern in the species communities found at "Blanket" or "Hummock" habitats?
+
+
+Another way of using groups is to draw ellipses, polygons or hulls around points belonging to the same group. Here we will use the three levels of shrub density (None, Few, Many) to draw ellipses around the points belonging to these categories.
+
+```{r miteGroups3, exercise = TRUE, exercise.setup = "nmds1"}
+
+# we start the plot with the same two lines as above, but without colours on the points:
+ordiplot(nmds, type = "n")
+points(nmds, "sites", pch = 16)
+
+## Now we can add ellipses around the points belonging to each shrub grouping:
+ordiellipse(ord, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
+
+```
+
+Let's add a legend to the plot to help interpret the colours.
+
+```{r miteGroups4, exercise = TRUE, exercise.setup = "nmds1"}
+
+# we start the plot with the same two lines as above, but without colours on the points:
+ordiplot(nmds, type = "n")
+points(nmds, "sites", pch = 16)
+
+## Now we can add ellipses around the points belonging to each shrub grouping:
+ordiellipse(ord, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
+
+legend("bottomleft", legend = levels(mite.env$Shrub), pch = 16, col = 1:3, bty = "n")
 
 ```
 
 
+We can also relate environmental variables to the ordination, and start to look for patterns that might explain some of the similarity. e.g. we might be able to identify environmental gradients along ordination axes. 
+
+Here we use the envfit function to assess how just the numeric environmental variables fit to the ordination.
+
+
+```{r envFit1, exercise = TRUE, exercise.setup = "nmds1"}
+
+fit <- envfit(nmds, mite.env[, c("SubsDens", "WatrCont")])
+
+```
+
+This analysis allows us to plot arrows for numeric environmental vectors and centroids for factors. 
+
+
+```{r envFit2, exercise = TRUE, exercise.setup = "envFit1"}
+
+ordiplot(nmds, type = "none")
+points(nmds, "sites", pch = 16, col= mite.env$Topo)
+plot(fit, p.max = 0.05)
+
+```
+
+The direction of the arrow points in the direction of increasing values of the variable. The length is proportional to the strength of the relationship. In this example, it seems that "Blanket" sites have greater water content than "Hummock" sites and that the NMDS2 axes could be interpreted as decreasing substrate density. If arrows from environmental variables point in the same direction, then those variables are correlated. 
+
+
+It also evaluates the statistical significance of the fit of the environmental variables to the ordination axes. The plot function allows for only significantly fitted variables to be plotted. The p-values for each factor or numeric variable can be seen when printing the `fit` object in the column headed `Pr(>r)`.
+
+Here we refit all the environmental variables:
+
+```{r envFit3, exercise = TRUE, exercise.setup = "nmds1"}
+
+fit <- envfit(nmds, mite.env)
+fit
+```

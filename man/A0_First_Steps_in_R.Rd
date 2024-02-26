@@ -12,4 +12,4 @@ and RStudio.
 learnr::run_tutorial("A0_First_Steps_in_R", package = "keeleR")
 }
 }
-\keyword{Introduction}
+\keyword{R}

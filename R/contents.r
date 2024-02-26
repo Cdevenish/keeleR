@@ -8,10 +8,10 @@
 #'
 contents <- function(){
 
-  dirs <- list.dirs("tutorials", recursive = FALSE)
+  dirs <- list.dirs(system.file("tutorials", package = "keeleR"), recursive = FALSE)
   tuts <- basename(dirs)
   tuts <- gsub("_", " ", tuts)
 
-  cat("Contents\n", paste(tuts, collapse = "\n"))
+  cat("Contents:\n", paste(trimws(tuts), collapse = "\n"))
 
 }

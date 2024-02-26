@@ -15,14 +15,14 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ### First steps in the console
 
-R is a programming environment, but it's also like a calculator. The following code calculates the answer to 1 + 1. Hit `Run Code` so that it performs the calculation.
+R is a programming environment, but it's also like a calculator. The following code calculates the answer to 1 + 1. Hit `Run Code` button, or use the keys `ctrl` + `enter` simultaneously, so that it performs the calculation.
 
 
 ```{r two-plus-two, exercise=TRUE}
 1 + 1
 ```
 
-Now change it so it calculates 2 + 2 and run the code.
+Now change it so it calculates 2 + 2 and run the code. Note that you can use `ctrl` + `enter` in RStudio normally.
 
 Well Done! You've just done your first calculation in R!!!
 
@@ -31,9 +31,14 @@ Well Done! You've just done your first calculation in R!!!
 
 ### Looking at a data set
 
-*Here's a data set that is built into R It's called `iris`.*
+*Here's a data set that is included with R. It's called `iris`.*
 
-The `head()` function shows you the first 6 rows of a data set. Run this code to see the first six lines of the `iris` data set:
+`iris` is a `data.frame` - this is similar to a table in excel. It looks like this in excel:
+
+![](images/iris_excel.png){width=40%}
+
+
+In R, the `head()` function shows you the first 6 rows of a data set. Run this code to see the first six lines of the `iris` data set:
 
 ```{r data_iris1, exercise=TRUE, exercise.eval=FALSE}
 
@@ -41,21 +46,16 @@ head(iris)
 
 ```
 
-`iris` is a `data.frame` - this is similar to table in excel. It looks like this in excel:
+This data set contains measurements of sepals and petals of four different species of iris flower. The first four columns are the numeric measurements, and the last is the name of the species. 
 
-![](images/iris_excel.png){width=40%}
-
-The data set has 5 columns and 150 rows. You can see this with the function `str()`. This function is useful for checking your data after you import it. Run the code to see the structure of this data set:
+The data set has 5 columns and 150 rows. You can see this with the function `str()`. This function is useful for checking your data after you import it. Run the code to see the structure of this data set: 
 
 ```{r data_iris2, exercise=TRUE, exercise.eval=FALSE}
 str(iris)
 
 ```
 
-This data set contains measurements of sepals and petals of four different species of iris flower. The first four columns are the numeric measurements, and the last is the name of the species. You can see the data types in the result of the function above.
-
 The `str()` function tells you that the `iris` object is a `data frame` with 150 observations (rows) and 5 variables (columns), it shows you the column names, and the type of data in each column: `num` is numeric, for the measurements, and `Factor` is a categorical variable for the species name.
-
 
 ### Your turn!
 
@@ -117,7 +117,7 @@ quiz(
 
 ### Assigning values to objects in R
 
-Data sets or groups of variables (often called objects) can either be created in R, or imported. Normally, we would begin by importing a data set, and then throughout the analysis we would create new objects, based on the original data. To create any object in R, we need to assign a data value to a named object. For example, we could create a variable called `data1` and give it a value of 10.
+Data sets or groups of variables (often called objects) can either be created in R, or imported. Normally, we would begin by importing a data set from a text file, and then throughout the analysis we would create new objects, based on the original data. To create any object in R, we need to assign a **data value** to a **named object**. For example, we could create a variable called `data1` and give it a value of 10.
 
 ```{r objects1, exercise = TRUE, exercise.eval = TRUE}
 
@@ -133,7 +133,7 @@ If we type in the name of our object, and press run, we will see its value in th
 ```
 
 
-Note that to assign the value of 10 to our new object `data1`, we have used an arrow pointing to the left ` <- `. This symbol is written as the `less than` sign followed by, without any spaces, the `minus` sign.
+Note that to assign the value of 10 to our new object `data1`, we have used an arrow pointing to the left ` <- `. This symbol is written as the `<` (less than) sign followed by the `-` (minus) sign without any spaces.
 
 Your turn! Create an object called `data4` and give it a value of 25. Run your code first and check it's working before you submit your answer.
 
@@ -158,10 +158,9 @@ data4 <- 25
 
 ### Importing data into R
 
-The `iris` data set was inbuilt. However, most of the time, we will typically collect data, organise it in excel, and then import it into R.
-One of the easiest ways to do this is to save the excel spreadsheet as a `.csv` file and then import this.
+The `iris` data set was already in R. However, most of the time, we will collect data, organise it in excel, and then import it into R. One of the easiest ways to do this is to save the excel spreadsheet as a `.csv` file and then import this.
 
-*Here we have some data from a survey of oak galls on Penduculate and Sessile oaks, surveyed at upland and lowland elevations*
+*Here we have some data from a survey of oak galls on Penduculate and Sessile oaks, surveyed at upland and lowland elevations in the UK.*
 
 This is the data set in excel:
 
@@ -171,9 +170,9 @@ The file has already been saved as `oak_galls.csv` and is located in a folder ca
 
 ![](images/excel_to_csv.png){width=50%}
 
-We can use the `read.csv()` function to read the csv file into R. When we create a new object in R, we have to give it name. A sensible name is short, but descriptive of the data. Avoid using any punctuation in your name apart from underscores. Here, we will call the data set `oaks`.
+We can use the `read.csv()` function to read the csv file into R. When we create a new object in R, we have to give it name. A sensible name is short, but descriptive of the data. Avoid using any punctuation in your name apart from underscores. Here, we will simply call the data set `oaks`.
 
-Run the code to import the data. Note that the path to the file is written in double quotes "".
+Run the code to import the data. Note that the **path** to the file (where it is stored on your computer) is written in double quotes "".
 
 ```{r galls1, exercise = TRUE}
 
@@ -202,7 +201,7 @@ This data set has four variables (columns) and 60 observations (rows):
 - The `height` column give tree height in metres  
 - The `galls` column gives the number of oak galls found on each tree  
 
-## 5 Simple plots
+## 5 Simple plots and functions
 
 ### Simple plots and accessing variables in data frames
 
@@ -218,7 +217,7 @@ plot(oaks$height, oaks$galls)
 
 **Remember a scatterplot shows the relationship between two numeric or continuous variables**
 
-Look at the above code. `oaks` is the name of the data frame, and `species` and `galls` are names of columns in the data frame. Note that we can access a column by using the `$` sign between the dataframe name and column name.
+Look at the above code. `oaks` is the name of the data frame, and `species` and `galls` are names of columns in the data frame. Note that we can access a column by using the `$` sign between the *dataframe name* and *column name*.
 
 Write the code below to print the data in the `height` column. Run the code.
 
@@ -232,7 +231,9 @@ oaks$height
 
 ```
 
-We can apply functions to columns (or vectors) of data frames. For example, what's the mean height of all the trees in the data set? Run the code to find out.
+### Using functions in R
+
+We can apply functions to columns (also called vectors) of data frames. For example, what's the mean height of all the trees in the data set? Run the code to find out.
 
 ```{r mean1, exercise = TRUE, exercise.setup = "galls1"}
 
@@ -244,8 +245,6 @@ Now calculate the mean number of galls on all the trees. Write the code below an
 
 ```{r mean2, exercise = TRUE, exercise.setup = "galls1"}
 
-
-
 ```
 
 
@@ -255,11 +254,54 @@ mean(oaks$galls)
 
 ```
 
+It might be useful to know the mean height of trees for each species. We can use the `tapply()` function for this. This function allows us to apply a function across different groups of a column.
 
+```{r tapply1, exercise = TRUE, exercise.setup = "galls1"}
+
+tapply(oaks$height, oaks$species, mean)
+
+```
+
+Note that the tapply function has three components:
+1. The data you want to apply the function to - in the example above, the tree heights (`oaks$height`)
+2. The group identifier, in this case, this is the column that shows us which species each measurement is from (`oaks$species`)
+3. The function we want to apply to the data, in this case, the mean of the heights (`mean`)
+
+
+*Your turn*
+
+Can you show the mean number of galls per species? 
+
+```{r tapply2, exercise = TRUE, exercise.setup = "galls1"}
+
+```
+
+```{r tapply2-solution}
+
+tapply(oaks$galls, oaks$species, mean)
+
+```
+
+
+Can you show the mean number of galls per upland or lowland region?
+
+```{r tapply3, exercise = TRUE, exercise.setup = "galls1"}
+
+```
+
+```{r tapply3-solution}
+
+tapply(oaks$galls, oaks$terrain, mean)
+
+```
+
+**Bonus** If the function for standard deviation is `sd()`, how would you show the standard deviation of galls for each upland or lowland region? Try it in the box above!
 
 ## 6 More plots
 
 ### More simple plots
+
+Here is a boxplot of tree species height, separated by species. In the boxplot, this shows us the median height of each species. Run the code to see the plot:
 
 ```{r boxplot1, exercise = TRUE, exercise.setup = "galls1"}
 
@@ -267,15 +309,13 @@ boxplot(height ~ species, data = oaks)
 
 ```
 
-What does the above boxplot show you?
+What does the above boxplot tell you?
 
 **Remember a boxplot shows the relationship between a numeric or continous and a categorical variable**
 
-
-By copying adapting the above code, can you draw a boxplot to show how gall number compares between upland and lowland observations. Write your code in the box below and press run to see the boxplot.
+By copying and adapting the above code, can you draw a boxplot to show how gall number compares between upland and lowland observations. Write your code in the box below and press run to see the boxplot.
 
 ```{r boxplot2, exercise = TRUE, exercise.setup = "galls1"}
-
 
 ```
 
@@ -291,7 +331,7 @@ boxplot(galls ~ terrain, data = oaks)
 
 ### Writing scripts - the key to using R effectively!
 
-Every time you use R, you should write your code in a script and save this in the folder for a particular data analysis, project, assessment, lesson, etc. 
+Every time you use R, you should write your code in a **script** and save this in the folder for a particular data analysis, project, assessment, lesson, etc. 
 
 Your scripts are simple text files - here you will write your commands and functions before you run them. Remember to write your name, date started, name of your project at the beginning.
 As you write your code, write plenty of comments like this:
@@ -319,22 +359,22 @@ You can change the layout of the windows and the colour of the code and backgrou
 
 Let's look at each window:
 
-#### Top left: Script window
+#### Top left: **Script window**
 ![Rstudio window 1](images/rstudio_screenshot_window1.png){width=60%}
 
 This window is where your script normally is. You will always write in your script, and save it, so that you keep a record of your analysis.
 
-#### Bottom left: Console window
+#### Bottom left: **Console window**
 ![Rstudio window 2](images/rstudio_screenshot_window2.png){width=60%}
 
 This is the console. Here you will see the results of your analysis, but you generally won't write or copy text from here.
 
-#### Top right: Environment window
+#### Top right: **Environment window**
 ![Rstudio window 3](images/rstudio_screenshot_window3.png){width=60%}
 
 This window shows your 'environment', that is all the objects or functions you have loaded at the moment (we'll learn about those later). It's important that this is always clear at the beginning of a session. Remember to clear everything out before you start.
 
-#### Bottom right: Plots/Help window
+#### Bottom right: **Plots/Help window**
 ![Rstudio window 4](images/rstudio_screenshot_window4.png){width=60%}
 
 This is where you will see plots or help files for functions. You can navigate between these windows using the tabs at the top. You can also see your folders and files here, like in a windows explorer window.
@@ -350,4 +390,4 @@ openScript(script = "my_first_script.r")
 
 ```
 
-and then stop the tutorial by closing the window. Paste the code into the console and run it! Your first script should open. Before you do anything else save it on your computer. Then continue to follow the instructions in the script.
+and then stop the tutorial by closing the window (x in top right corner). Paste the code into the console and run it! Your first script should open. Before you do anything else save it on your computer. Then continue to follow the instructions in the script.
