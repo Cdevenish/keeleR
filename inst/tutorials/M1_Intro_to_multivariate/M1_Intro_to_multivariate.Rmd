@@ -12,7 +12,7 @@ library(vegan)
 data(dune); data(dune.env)
 data(sipoo)
 data(varechem); data(varespec)
-
+data(mite); data(mite.env)
 
 data(BCI); data(BCI.env)
 BCI_trees <- BCI[1:25, 1:40]
@@ -261,7 +261,7 @@ ordiplot(nmds, type = "n")
 points(nmds, "sites", pch = 16)
 
 ## Now we can add ellipses around the points belonging to each shrub grouping:
-ordiellipse(ord, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
+ordiellipse(nmds, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
 
 ```
 
@@ -274,7 +274,7 @@ ordiplot(nmds, type = "n")
 points(nmds, "sites", pch = 16)
 
 ## Now we can add ellipses around the points belonging to each shrub grouping:
-ordiellipse(ord, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
+ordiellipse(nmds, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
 
 legend("bottomleft", legend = levels(mite.env$Shrub), pch = 16, col = 1:3, bty = "n")
 
