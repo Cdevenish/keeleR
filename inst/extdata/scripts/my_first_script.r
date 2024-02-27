@@ -59,11 +59,11 @@ plot(iris$Sepal.Length, iris$Sepal.Width, pch = c(1,2)[iris$Species])
 # Now some exercises, following on from the first tutorial:
 
 
-## Download the csv from the KLE
+## Download the "arthropods.csv" from the KLE
 
 
 
-d1 <- read.csv("./data/mydata.csv")
+d1 <- read.csv("PATH/TO/DATA/HERE/arthropods.csv")
 
 head(d1)
 str(d1)
