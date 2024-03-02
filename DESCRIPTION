@@ -7,6 +7,7 @@ Authors@R:
 Description: This package primarily houses tutorials built with the learnR package. See contents() for a list of these.
 License: GPL (>= 3)
 Imports: learnr, shiny (>= 1.0.0), vegan
+Depends: R (>= 3.5.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
