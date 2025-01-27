@@ -1,0 +1,138 @@
+---
+title: "Comparing between groups"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+# Comparing between groups  
+
+## Two groups  
+
+### 1. Example  
+
+*Here's an example analysis where we want to compare between two groups.*
+
+Run the R code to follow the story.
+
+You are studying the rare, threatened Tee bird in South America. As part of some basic ecological analysis you have a historic data set from captured and ringed birds. You want to know whether there is a difference in weight between sexes as this might inform different conservation strategies. 
+
+We are going to use the analysis protocol to work through this example.
+
+-*1 Ask your question*
+Is there a difference in weight between female and male Tee birds?
+(i.e. comparing mean weight between two groups)
+
+-2 *Check and explore your data*
+
+-2.1 First import the data. 
+
+```{r example-t-test-import, exercise=TRUE}
+
+tBird <- read.csv("data/bird_captures.csv", stringsAsFactors = TRUE)
+
+
+```
+
+-2.2 Now explore the data. 
+How many columns are there? What do they represent? Check the data log.
+
+```{r example-t-test-explore, exercise=TRUE}
+head(tBird)
+str(tBird) # Numeric and categorical (factor) data types
+
+```
+
+-2.3 Now plot the data
+
+```{r example-t-test-plot1, exercise=TRUE}
+# Index plots - any obvious outliers?
+plot(tBird$weight)
+
+```
+
+A box plot is suitable for a numeric variable and a categorical (grouping) variable.
+
+```{r example-t-test-plot2, exercise=TRUE}
+
+boxplot(weight ~ sex, data = tBird)
+
+```
+
+-3 *Write your Null Hypothesis - H0*
+
+There is no difference between the mean weight of female and male Tee birds from a sample of 30 captures.
+
+-4 *Decide on your stats test*
+
+We have two groups (two levels of the factor) and a numeric (response) variable. To find whether there is a significant difference between groups could be assessed with a T-test or a Wilcoxon Test. 
+
+-4.1 Is our data normal? Check distribution visually.
+```{r example-t-test-decide-hist, exercise=TRUE}
+
+tapply(tBird$weight, tBird$sex, hist)
+
+```
+
+-4.2 Is our data normal? Check distribution formally.
+```{r example-t-test-decide-normal, exercise=TRUE}
+# test all weights at once
+shapiro.test(tBird$weight)
+
+# better to test by groups
+tapply(tBird$weight, tBird$sex, shapiro.test)
+
+```
+
+
+-5 *Do test and check significance value*
+```{r example-t-test-doTest, exercise=TRUE}
+# Given that our data are normally distributed, we can use the t-test:
+t.test(weight ~ sex, data = tBird) # note this is the same format as the boxplot
+
+```
+
+
+Plot
+-6 *Present your results*
+-6.1 Plot the data for your report
+
+Do a plot with all the correct axis labels (including units), axis limits, etc.
+```{r example-t-test-plot, exercise=TRUE}
+
+boxplot(weight ~ sex, data = tBird,
+        xlab = "Weight (g)",
+        ylab = "Sex",
+        main = "")
+
+```
+
+-6.2 Extract statistics, effect size, sample size.
+```{r example-t-test-stats, exercise=TRUE}
+# Either can copy from the console results (as above)
+
+# Or can assign test results to object and extract from here:
+results <- t.test(weight ~ sex, data = tBird)
+
+results$p.value # P value
+results$statistic # T statistic
+results$parameter # degrees of freedom (sample size information)
+
+# Get standard deviations of each group
+tapply(tBird$weight, tBird$sex, sd)
+
+```
+6.3 Write a results statement:
+
+Using a t-test we found that female Tee birds were significantly heavier than males on average (t = 3.71, df = 57.9, p < 0.001) from a sample of 30 captures (female mean weight: 8.14, 0.70 standard deviation of; male mean weight 7.45 g sd: 0.74).
+
+Or
+
+There is a significant difference between the mean weight of female and male Tee birds (t = 3.71, df = 57.9, p < 0.001). Females had a higher mean weight (8.14g +-0.70) than males (7.45g +- 0.74).
+
+0.7043271 0.7406205 

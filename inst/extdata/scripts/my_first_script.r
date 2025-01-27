@@ -2,13 +2,16 @@
 
 ## Write your name here !!! AND THEN SAVE THIS SCRIPT using "File|Save As ..."
 
-## Module ESC-30110 Advanced Field Skills
+## Module Number Name
 
 # This functions provides today's date. Try it!
 # Use ctrl + enter when your cursor is on the same line as your command in the script
 date()
 
 ## Always write comments before your code ...
+
+
+##### Part 1 Using the built-in Iris data set ###############
 
 ## Let's look at the same inbuilt data set as before
 data(iris)
@@ -49,21 +52,12 @@ plot(iris$Sepal.Length, iris$Sepal.Width, col = iris$Species, pch = 16)
 ## Can you change the symbol to something else? Write your code here:
 
 
-## You can also set the symbol to change according to species, e.g.
 
+## You can also set the symbol to change according to species, e.g.
 plot(iris$Sepal.Length, iris$Sepal.Width, pch = c(1,2)[iris$Species])
 
 ## If you change the numbers in c(1,2) you can change the symbols.
-
-
-# Now some exercises, following on from the first tutorial:
-
-
-## Download the "arthropods.csv" from the KLE
+## This would also work with colours.
 
 
 
-d1 <- read.csv("PATH/TO/DATA/HERE/arthropods.csv")
-
-head(d1)
-str(d1)

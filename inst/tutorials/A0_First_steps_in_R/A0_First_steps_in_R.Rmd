@@ -254,7 +254,7 @@ mean(oaks$galls)
 
 ```
 
-It might be useful to know the mean height of trees for each species. We can use the `tapply()` function for this. This function allows us to apply a function across different groups of a column.
+It might be useful to know the mean tree height for each species. We can use `tapply()` to apply a function (e.g. `mean()`) to each group within our data, e.g. to each species here. The different groups can be in a column of the same data set (e.g. `species`).
 
 ```{r tapply1, exercise = TRUE, exercise.setup = "galls1"}
 
@@ -327,7 +327,7 @@ boxplot(galls ~ terrain, data = oaks)
 ```
 
 
-## 7 Your first script in RStudio
+## 7 Scripts and projects in RStudio
 
 ### Writing scripts - the key to using R effectively!
 
@@ -352,33 +352,59 @@ The space where you just ran the code is called the Console. The console is one 
 
 *Here's a screen shot of the default RStudio layout that you will see if you have just installed it.*
 
-![Rstudio screen shot](images/rstudio_screenshot.png){width=80%}
+![**Rstudio screen shot**](images/rstudio_screenshot.png){width=80%}
 
-  
+$\\$
 You can change the layout of the windows and the colour of the code and background - which may it easier to see the code. But for the moment, we'll continue with the default settings.
 
 Let's look at each window:
 
 #### Top left: **Script window**
-![Rstudio window 1](images/rstudio_screenshot_window1.png){width=60%}
-
+![](images/rstudio_screenshot_window1.png){width=60%}
+$\\$
 This window is where your script normally is. You will always write in your script, and save it, so that you keep a record of your analysis.
 
 #### Bottom left: **Console window**
-![Rstudio window 2](images/rstudio_screenshot_window2.png){width=60%}
-
+![](images/rstudio_screenshot_window2.png){width=60%}
+$\\$
 This is the console. Here you will see the results of your analysis, but you generally won't write or copy text from here.
 
 #### Top right: **Environment window**
-![Rstudio window 3](images/rstudio_screenshot_window3.png){width=60%}
-
+![](images/rstudio_screenshot_window3.png){width=60%}
+$\\$
 This window shows your 'environment', that is all the objects or functions you have loaded at the moment (we'll learn about those later). It's important that this is always clear at the beginning of a session. Remember to clear everything out before you start.
 
 #### Bottom right: **Plots/Help window**
-![Rstudio window 4](images/rstudio_screenshot_window4.png){width=60%}
-
+![](images/rstudio_screenshot_window4.png){width=60%}
+$\\$
 This is where you will see plots or help files for functions. You can navigate between these windows using the tabs at the top. You can also see your folders and files here, like in a windows explorer window.
 
+
+### Working directories - the key to organising your work
+
+We will implement a project structure for each class or analysis we do - good habits start early!!
+
+A simple project structure consists of a project folder (the working directory) containing data, scripts, and information about the project, each within different folders. To help you keep track, it is easier to keep the same folder names (apart from the project name) for each project.
+
+![](images/project_structure.png){width=60%}  
+
+$\\$
+See [The Project Tier protocol](https://www.projecttier.org/tier-protocol/protocol-4-0/root/) for a more detailed structure, but the above is good for us for now.
+
+The working directory is the top (or root) folder. You can check what your current working directory is in R. Run this code to see. Note that this is an unusual location for a working directory as we are in a tutorial.
+
+```{r wd_get, exercise = TRUE}
+
+getwd()
+
+```
+
+You can set a working directory using the `setwd()` function. Put the path to the working directory inside the function, inside quotes. e.g. "C:/Users/xyh76/OneDrive - University of Keele/Documents/MSc_Bio/Module_40125/R-classes/project1".
+
+
+To avoid having to set the working directory each time, you can create a project in RStudio inside your working directory. As well as other advantages of working with projects (e.g. keeping different analyses separate, and saving your open scripts each time), RStudio will automatically set your working directory each time you open your saved project.
+
+We will create a working directory and a project structure after this tutorial. But first, try working from a script, instead of from within a tutorial.
 
 ### My first script
 
@@ -391,3 +417,6 @@ openScript(script = "my_first_script.r")
 ```
 
 and then stop the tutorial by closing the window (x in top right corner). Paste the code into the console and run it! Your first script should open. Before you do anything else save it on your computer. Then continue to follow the instructions in the script.
+
+If that doesn't work, download the "my_first_script.r" from the KLE and continue in Rstudio, as above.
+
