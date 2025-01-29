@@ -32,7 +32,7 @@ Is there a difference in weight between female and male Tee birds?
 
 ```{r example-t-test-import, exercise=TRUE}
 
-tBird <- read.csv("./inData/bird_captures.csv", stringsAsFactors = TRUE)
+tBird <- read.csv("inData/bird_captures.csv", stringsAsFactors = TRUE)
 
 ```
 

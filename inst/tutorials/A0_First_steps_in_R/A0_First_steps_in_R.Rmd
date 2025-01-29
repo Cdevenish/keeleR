@@ -176,7 +176,7 @@ Run the code to import the data. Note that the **path** to the file (where it is
 
 ```{r galls1, exercise = TRUE}
 
-oaks <- read.csv("./inData/oak_galls.csv")
+oaks <- read.csv("inData/oak_galls.csv")
 
 ```
 
