@@ -32,20 +32,25 @@ Is there a difference in weight between female and male Tee birds?
 
 ```{r example-t-test-import, exercise=TRUE}
 
-tBird <- read.csv("inData/bird_captures.csv", stringsAsFactors = TRUE)
+tBird <- read.csv("data/bird_captures.csv", stringsAsFactors = TRUE)
 
 ```
 
--2.2 Now explore the data. 
-How many columns are there? What do they represent? Remember the `head()` and `str()` functions?
+-2.2 Now explore the data. Use the `head()` and `str()` functions to check the data.
+How many columns are there? What do they represent?
 
 ```{r example-t-test-explore, exercise=TRUE, exercise.setup = "example-t-test-import"}
+
+
+```
+
+```{r example-t-test-explore-solution, exercise.reveal_solution = TRUE}
 head(tBird)
 str(tBird) # Numeric and categorical (factor) data types
 
 ```
 
--2.3 Now plot the data
+-2.3 Now plot the data. First plot just the weight column and check for any outliers.
 
 ```{r example-t-test-plot1, exercise=TRUE, exercise.setup = "example-t-test-import"}
 # Index plots - any obvious outliers?
@@ -54,12 +59,19 @@ plot(tBird$weight)
 ```
 
 A box plot is suitable for a numeric variable and a categorical (grouping) variable.
+Write the code to plot the weight for each sex as a boxplot. 
 
 ```{r example-t-test-plot2, exercise=TRUE, exercise.setup = "example-t-test-import"}
+
+
+```
+
+```{r example-t-test-plot2-solution, exercise.reveal_solution = TRUE}
 
 boxplot(weight ~ sex, data = tBird)
 
 ```
+
 
 -3 *Write your Null Hypothesis - H0*
 
@@ -69,7 +81,7 @@ There is no difference between the mean weight of female and male Tee birds from
 
 We have two groups (two levels of the sex factor) and a numeric (response) variable. To find whether there is a significant difference between groups could be assessed with a T-test or a Wilcoxon Test.
 
--4.1 Is our data normal? Check distribution visually.
+-4.1 Is our data normal? Check distribution visually. Notice how we are using the `tapply()` function do plot one histogram for each sex.
 ```{r example-t-test-decide-hist, exercise=TRUE, exercise.setup = "example-t-test-import"}
 
 tapply(tBird$weight, tBird$sex, hist)
@@ -93,7 +105,16 @@ t.test(weight ~ sex, data = tBird) # note this is the same format as the boxplot
 # For simple tests like this you can copy directly from the console (it's also possible to export as a csv)
 # i.e. Copy the p-value, t statistic and the degrees of freedom (an indication of sample size)
 t.test(weight ~ sex, data = tBird)
+```
 
+We also want to report the means, and standard deviations for each group. Write the code, using `tapply()` to do that.
+```{r example-t-test-means, exercise=TRUE, exercise.setup = "example-t-test-import"}
+
+
+```
+
+
+```{r example-t-test-means-solution, exercise.reveal_solution = TRUE}
 # We also want to report the means, and standard deviations for each group
 tapply(tBird$weight, tBird$sex, mean)
 tapply(tBird$weight, tBird$sex, sd)
@@ -116,4 +137,33 @@ boxplot(weight ~ sex, data = tBird,
 
 Using a t-test we found that, on average, female Tee birds were significantly heavier than males (t = 3.71, df = 57.9, p < 0.001) from a sample of 30 captures. Females had a higher mean weight (8.14g `r knitr::asis_output("\U00B1")`0.70) than males (7.45g `r knitr::asis_output("\U00B1")` 0.74).
 
- 
+## Comparing more than two groups
+
+
+
+
+
+
+```{r quiz1}
+quiz(
+  question_numeric("How many rows does the trees data set have?",
+                   answer(31, correct = TRUE)
+  ),
+  question("What are the names of the columns of the trees data set?",
+    answer("Girth", correct = TRUE),
+    answer("height"),
+    answer("Volume", correct = TRUE),
+    answer("Mass"),
+    answer("Height", correct= TRUE)
+  ),
+  question_radio("What is the height of the third tree in the data set?",
+                 answer(65),
+                 answer(63, correct = TRUE),
+                 answer(31),
+                 answer(10.2),
+                 answer(8.8),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE)
+  
+)
+```
