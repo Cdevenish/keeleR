@@ -166,7 +166,7 @@ This is the data set in excel:
 
 ![](images/oak_excel.png){width=60%}
 
-The file has already been saved as `oak_galls.csv` and is located in a folder called `inData`.
+The file has already been saved as `oak_galls.csv` and is located in a folder called `data`.
 
 ![](images/excel_to_csv.png){width=50%}
 
@@ -176,7 +176,7 @@ Run the code to import the data. Note that the **path** to the file (where it is
 
 ```{r galls1, exercise = TRUE}
 
-oaks <- read.csv("inData/oak_galls.csv")
+oaks <- read.csv("data/oak_galls.csv")
 
 ```
 
