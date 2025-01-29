@@ -29,7 +29,7 @@ help(package = keeleR)
 #install.packages("learnr") # This may already be installed. If not, run this line.
 
 ## for example, to run the first tutorial:
-learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR")
+learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR", shiny_args = list(launch.browser = TRUE))
 
 ```
 
