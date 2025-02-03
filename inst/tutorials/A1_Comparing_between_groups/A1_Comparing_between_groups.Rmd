@@ -79,33 +79,59 @@ There is no difference between the mean weight of female and male Tee birds from
 
 -4 *Decide on your stats test*
 
-We have two groups (two levels of the sex factor) and a numeric (response) variable. To find whether there is a significant difference between groups could be assessed with a T-test or a Wilcoxon Test.
+We have two groups (two levels of `sex`) and a numeric (response) variable, `weight`. You could use a T-test or a Wilcoxon Test to find out whether there is a significant difference between groups.
 
--4.1 Is our data normal? Check distribution visually. Notice how we are using the `tapply()` function do plot one histogram for each sex.
+-4.1 Is our data normal? Check distribution visually. Notice how we are using the `tapply()` function to plot one histogram for each sex.
 ```{r example-t-test-decide-hist, exercise=TRUE, exercise.setup = "example-t-test-import"}
 
 tapply(tBird$weight, tBird$sex, hist)
 
 ```
 
-This can also be tested formally, but let's go by the histograms and assume they are normally distributed.
+This can also be tested formally, but for now, let's just use the histograms and assume they are normally distributed.    
 
 -5 *Do test and check significance value*
+Given that our data are normally distributed, we can use the t-test. Note that the function is `t.test()` and its arguments are very similar to the `boxplot()` function.
+
 ```{r example-t-test-doTest, exercise=TRUE, exercise.setup = "example-t-test-import"}
-# Given that our data are normally distributed, we can use the t-test:
-t.test(weight ~ sex, data = tBird) # note this is the same format as the boxplot
+
+t.test(weight ~ sex, data = tBird) # note same format as boxplot
 
 ```
 
 
 -6 *Present your results*
 
--6.1 Extract statistics, effect size, sample size.
-```{r example-t-test-stats, exercise=TRUE, exercise.setup = "example-t-test-import"}
-# For simple tests like this you can copy directly from the console (it's also possible to export as a csv)
-# i.e. Copy the p-value, t statistic and the degrees of freedom (an indication of sample size)
-t.test(weight ~ sex, data = tBird)
+-6.1 Extract statistics, effect size, sample size.  
+For simple tests like this you can copy directly from the console (it's also possible to export as a csv).
+Look at the output above from the t-test. The second line contains:  
+- the statistic value (t = )  
+- the degrees of freedom (an indication of sample size)  
+- p value (if this is lower than our threshold, usually 0.05, then we reject the Null Hypothesis and accept the Alternate Hypothesis)  
+
+The last line contains the means of each group (i.e. mean weight of females and mean weight of males)
+
+```{r quiz1}
+quiz(
+  question_numeric("What is the p-value of the above test (to 4 decimal places)?",
+                   answer(0.0005, correct = TRUE)
+  ),
+  question_numeric("What is the value of the degrees of freedom?",
+                   answer("57.854", correct = TRUE)
+  ),
+  question_radio("What is the mean weight of males (to two decimal places)?",
+                 answer(7.44),
+                 answer(7.45, correct = TRUE),
+                 answer(7.50),
+                 answer(8.14),
+                 answer(8.15),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE)
+  
+)
 ```
+
+
 
 We also want to report the means, and standard deviations for each group. Write the code, using `tapply()` to do that.
 ```{r example-t-test-means, exercise=TRUE, exercise.setup = "example-t-test-import"}
@@ -115,7 +141,6 @@ We also want to report the means, and standard deviations for each group. Write 
 
 
 ```{r example-t-test-means-solution, exercise.reveal_solution = TRUE}
-# We also want to report the means, and standard deviations for each group
 tapply(tBird$weight, tBird$sex, mean)
 tapply(tBird$weight, tBird$sex, sd)
 
@@ -137,33 +162,238 @@ boxplot(weight ~ sex, data = tBird,
 
 Using a t-test we found that, on average, female Tee birds were significantly heavier than males (t = 3.71, df = 57.9, p < 0.001) from a sample of 30 captures. Females had a higher mean weight (8.14g `r knitr::asis_output("\U00B1")`0.70) than males (7.45g `r knitr::asis_output("\U00B1")` 0.74).
 
+## Comparing between two means - your turn!
+
+Now it's your turn! You have two data sets on the KLE. Download the .csv files and carry out the analysis necessary to answer the questions:  
+
+**1 Subspecies conservation**  
+
+
+You are working on the conservation of a threatened lizard in the Alps, in Europe. There are believed to be two subspecies, *variatus* and *minimalis*. *variatus* is much more common than *minimalis*, a fact which might influence potential conservation strategies. You want to investigate ecological differences between the subspecies. Is there a difference in habitat use at different elevations (m above sea level) between the two subspecies?  
+
+Download `subspecies_elevation_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
+
+
+**2 Protected area effectiveness**   
+
+
+A study has looked at effectiveness of protected area management and classified 100 protected areas as having high or low management effectiveness. You are interested to know whether the cost of implementing management activities at each area (in GBP£/ha) is related to management effectiveness.
+
+Download `protected_area_management_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
+
+
+
 ## Comparing more than two groups
 
+If you have more than two groups, you can use an ANOVA or Kruskal-Wallis test to evaluate whether there is a significant difference between each group. For normally distributed data, you use an ANOVA, whereas for non-normal data you would use a Kruskal-Wallis test.
+
+
+In this example we will look at the `iris` data set. This is a built-in data set, already loaded into R. This data set gives measurements (in cm) of sepal length and width and petal length and width for three species of iris for 50 individuals of each species. The species names are *Iris setosa*, *I. versicolor*, and *I. virginica*.
+
+```{r iris-data, exercise=TRUE}
+
+data(iris)
+head(iris)
+
+```
+
+
+1. We want to know whether there is a significant difference between the mean sepal width of the three species.
+
+2. Check and plot. A useful function is `summary()`. It takes a data.frame as an argument. Use this function to look at summary information about the iris data set.
+
+```{r iris_summary, exercise = TRUE}
 
 
 
+```
+
+What does the function tell you? Note that we are looking at a global summary, that is, across all species.
+
+```{r iris_summary-solution, exercise = TRUE, exercise.reveal_solution = TRUE}
+
+summary(iris)
+
+```
+
+Make a boxplot of sepal width for all the species:
+
+```{r iris_bxplot, exercise = TRUE}
 
 
-```{r quiz1}
+
+```
+
+```{r iris_bxplot-solution, exercise.reveal_solution = TRUE}
+
+boxplot(Sepal.Width ~ Species, data = iris)
+
+```
+
+Do think there is a difference in the mean sepal width between all three species? 
+
+3. What is the Null Hypothesis for our question? 
+
+**H0 There is no significant difference between the mean sepal width of the three iris species**   
+What is the alternative hypothesis?
+
+4. Decide on the test. We know we want to compare groups, and we have more than two groups. So the test could be an ANOVA or Kruskal Wallis. We need to check two pieces of information before deciding.
+
+There are two conditions that we test for when doing an ANOVA test. Normality, and Homogeneity of Variance.
+
+We can test for normality by drawing a histogram. Here is some code for a library used to produce graphics (`ggplot2`). We will look at this more later, but for now, run the code and note how the histogram is produced for each species separately.
+
+```{r iris_histogram, exercise = TRUE}
+
+library(ggplot2)
+
+ggplot(iris, aes(x = Sepal.Width))+
+  geom_histogram()+
+  facet_wrap(~ Species)
+
+```
+
+
+We can also do a formal test for normality with the `shapiro.test` function. It is useful to think about the Null Hypothesis for this normality test:
+
+**H0 There is NO significant difference between the distribution of my data and a normal distribution**  
+**HA There IS a significant difference between the distribution of my data and a normal distribution**  
+
+Remember that if the `p-value` is < 0.05, then we can reject the Null Hypothesis. Here is the code for the shapiro test. Frist we will test all the data together:
+
+```{r iris_shapiro, exercise = TRUE}
+
+shapiro.test(iris$Sepal.Width)
+
+```
+
+```{r quiz2}
 quiz(
-  question_numeric("How many rows does the trees data set have?",
-                   answer(31, correct = TRUE)
+  question_radio("Is the p-value of the test greater (>) or less (<) than 0.05?",
+                 answer("greater than 0.05", correct = TRUE),
+                 answer("less than 0.05"),
+                 random_answer_order = FALSE,
+                 allow_retry = TRUE
   ),
-  question("What are the names of the columns of the trees data set?",
-    answer("Girth", correct = TRUE),
-    answer("height"),
-    answer("Volume", correct = TRUE),
-    answer("Mass"),
-    answer("Height", correct= TRUE)
+  question_radio("Do you reject or accept the Null Hypothesis?",
+                 answer("Accept the H0", correct = TRUE),
+                 answer("Reject the H0"),
+                 random_answer_order = FALSE,
+                 allow_retry = TRUE
   ),
-  question_radio("What is the height of the third tree in the data set?",
-                 answer(65),
-                 answer(63, correct = TRUE),
-                 answer(31),
-                 answer(10.2),
-                 answer(8.8),
-                 random_answer_order = TRUE,
+  question_radio("Therefore, is your data normally distributed or not?",
+                 answer("It is normal", correct= TRUE),
+                 answer("It is not normal"),
+                 random_answer_order = FALSE,
                  allow_retry = TRUE)
-  
+  )
+```
+
+Now let's see the results of the shapiro test for each species individually. This is the preferred way to do the test. Note that the result is actually the same as above.
+
+```{r iris_shapiro_spp, exercise = TRUE}
+
+tapply(iris$Sepal.Width, iris$Species, shapiro.test)
+
+```
+
+The other condition is that the variance of each group is also similar. We can use the Bartlett Test to evaluate whether the variance of the sepal widths for each species is similar. Here is the code for the Bartlett Homogeneity of Variance test on the sepal width data:
+
+```{r iris_bartlett, exercise = TRUE}
+
+bartlett.test(iris$Sepal.Width, iris$Species) 
+
+```
+
+What is the Null Hypothesis for this test?
+**H0 There is no significant difference between the variances of the sepal width between the three species**
+
+Remember if the `p-value` is < 0.05, then we reject the Null Hypothesis.
+
+
+```{r quiz3}
+quiz(
+  question_radio("Is the variance similar between all of the species?",
+                 answer("Yes", correct = TRUE),
+                 answer("No"),
+                 try_again = "The interpretation is similar to the normality test interpretation",
+                 post_message = "Yes, if the p-value is greater than 0.05, we accept the H0. This implies there is no significant difference between the variances",
+                 random_answer_order = FALSE,
+                 allow_retry = TRUE )
 )
 ```
+
+So now we can conclude that we can use the ANOVA test, as our data is both normally distributed, without significant differences between the variances of each group.
+
+5. Now we can perform the ANOVA test (at last...). Here is the code for an ANOVA test. Note that we have assigned the result of the test to an object called `aov1`.
+
+```{r iris_anova, exercise = TRUE}
+
+aov1 <- aov(Sepal.Width~Species, data=iris)
+
+```
+
+We can use the `summary()` function to show the results of the test. Put `aov1` into summary to see the results:
+
+```{r iris_anova_summary, exercise = TRUE, exercise.setup = "iris_anova"}
+
+
+```
+
+```{r iris_anova_summary-solution, exercise.reveal_solution = TRUE}
+
+summary(aov1)
+
+```
+
+We'll concentrate on just some of this output. Df is the degrees of freedom. The first line tells us there were 3 species (3-1), with 150 observations (150-2-1). The F statistic is the value of the test statistic (more on that later) and the p-value tells us whether there is a significant difference between any of the three species. The p value is `<2e-16 ***` That means p is less than 0.0000000000000002. That is certainly less than 0.05. In these cases, we would normally report p as `p < 0.001`. However, if it is significant (which it is) it doesn't tell us between which species there is a significant difference. It could be between all possible pairs, or just one. For that, we'll have to do another test.
+
+The important parts to report are the F value, degrees of freedom (or sample size) and the p value.
+
+*Post hoc test*
+Here is the code for the post hoc test. Note that we need another library for this test (`multcomp`).
+
+```{r iris_post, exercise = TRUE, exercise.setup = "iris_anova"}
+
+library(multcomp)
+mc <- glht(aov1, linfct = mcp(Species = "Tukey"))
+
+```
+
+Now use the `summary()` function again to look at where those differences lie:
+
+```{r iris_post_summary, exercise = TRUE,exercise.setup = "iris_anova"}
+
+
+```
+
+```{r iris_post_summary-solution, exercise.reveal_solution = TRUE}
+
+summary(mc)
+
+```
+
+Now use `tapply()` to find the mean and standard deviation of the sepal widths between the three species.
+
+```{r iris_mean_tapply, exercise = TRUE}
+
+```
+
+
+```{r iris_mean_tapply-solution, exercise.reveal_solution = TRUE}
+
+tapply(iris$Sepal.Width, iris$Species, mean)
+tapply(iris$Sepal.Width, iris$Species, sd)
+
+```
+
+6. Present your results
+Finally, we can write an initial results statement for our test.
+
+Using an ANOVA we found a significant difference between the mean sepal widths of three species of iris (F = 49.16, df = 2,147, p < 0.001). The species *setosa* had the largest sepal width (3.43 `r knitr::asis_output("\U00B1")` 0.38). ...
+
+
+
+
+
+
