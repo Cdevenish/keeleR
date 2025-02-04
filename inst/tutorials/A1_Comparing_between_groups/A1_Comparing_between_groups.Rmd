@@ -106,7 +106,7 @@ t.test(weight ~ sex, data = tBird) # note same format as boxplot
 For simple tests like this you can copy directly from the console (it's also possible to export as a csv).
 Look at the output above from the t-test. The second line contains:  
 - the statistic value (t = )  
-- the degrees of freedom (an indication of sample size)  
+- the degrees of freedom (df = ), an indication of sample size    
 - p value (if this is lower than our threshold, usually 0.05, then we reject the Null Hypothesis and accept the Alternate Hypothesis)  
 
 The last line contains the means of each group (i.e. mean weight of females and mean weight of males)
@@ -162,7 +162,7 @@ boxplot(weight ~ sex, data = tBird,
 
 Using a t-test we found that, on average, female Tee birds were significantly heavier than males (t = 3.71, df = 57.9, p < 0.001) from a sample of 30 captures. Females had a higher mean weight (8.14g `r knitr::asis_output("\U00B1")`0.70) than males (7.45g `r knitr::asis_output("\U00B1")` 0.74).
 
-## Comparing between two means - your turn!
+## Your turn! Comparing between two means
 
 Now it's your turn! You have two data sets on the KLE. Download the .csv files and carry out the analysis necessary to answer the questions:  
 
@@ -180,6 +180,8 @@ Download `subspecies_elevation_data.csv` from the Data folder on this week's KLE
 A study has looked at effectiveness of protected area management and classified 100 protected areas as having high or low management effectiveness. You are interested to know whether the cost of implementing management activities at each area (in GBP£/ha) is related to management effectiveness.
 
 Download `protected_area_management_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
+
+**Hint!** Look at the histograms to check normality (we will look at a formal test in the next section). But for now, you will probably need to use the non-parametric version of the t-test: `wilcox.test()`. You should be able to interpret the results in the same way as above. Instead of degrees of freedom, report the sample size.
 
 
 
@@ -305,7 +307,7 @@ bartlett.test(iris$Sepal.Width, iris$Species)
 
 ```
 
-What is the Null Hypothesis for this test?
+What is the Null Hypothesis for this test?  
 **H0 There is no significant difference between the variances of the sepal width between the three species**
 
 Remember if the `p-value` is < 0.05, then we reject the Null Hypothesis.
@@ -373,6 +375,9 @@ summary(mc)
 
 ```
 
+You can interpret these results with the p-values for each pair of differences. Think of the Null Hypothesis for each pair. e.g. for the first one:  
+**H0 There is no difference in mean sepal width between *versicolor* and *setosa*.**
+
 Now use `tapply()` to find the mean and standard deviation of the sepal widths between the three species.
 
 ```{r iris_mean_tapply, exercise = TRUE}
@@ -393,7 +398,13 @@ Finally, we can write an initial results statement for our test.
 Using an ANOVA we found a significant difference between the mean sepal widths of three species of iris (F = 49.16, df = 2,147, p < 0.001). The species *setosa* had the largest sepal width (3.43 `r knitr::asis_output("\U00B1")` 0.38). ...
 
 
+## Your turn! Comparing multiple groups.
 
+**Invertebrate species richness across four habitats**
+
+You have measured invertebrate species richness across four habitat from 20 samples within each habitat. You are interested in finding out whether there is a significant difference in species richness across the habitats, and if so, which habitats are different.
+
+Download `species_habitat_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
 
 
 
