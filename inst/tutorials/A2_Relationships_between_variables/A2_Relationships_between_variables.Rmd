@@ -10,66 +10,178 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-## Topic 1
+## Comparing between two numeric variables
 
-### Exercise 
+### Example analysis
 
-*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+**Here's an example analysis ... **
 
-Write the R code required to add two plus two:
+-1 *Ask your question*
 
-```{r two-plus-two, exercise=TRUE}
+-2 *Check and explore your data*
+
+```{r ,exercise = TRUE}
 
 ```
 
-### Exercise with Code
+```{r ,exercise = TRUE}
 
-*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
-
-Now write a function that adds any two numbers and then call it:
-
-```{r add-function, exercise=TRUE, exercise.lines = 5}
-add <- function() {
-  
-}
 ```
 
-## Topic 2
+```{r -solution, exercise.reveal_solution = TRUE}
 
-### Exercise with Hint
-
-*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
-
-Modify the following code to limit the number of rows printed to 5:
-
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
 ```
 
-```{r print-limit-hint}
-head(mtcars)
+```{r , exercise=TRUE}
+
 ```
 
-### Quiz
+```{r , exercise=TRUE}
 
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+```
 
-Some questions to verify that you understand the purposes of various base and recommended R packages:
+```{r -solution, exercise.reveal_solution = TRUE}
 
-```{r quiz}
+```
+
+-3 *Write your Null Hypothesis - H0*
+
+**There is no association between the woodlouse species and soil type.**
+In other words, woodlouse species is independent of soil type.
+
+-4 *Decide on your stats test*
+
+```{r , exercise=TRUE}
+
+```
+
+-5 *Do test and check significance value*
+
+```{r , exercise=TRUE}
+```
+
+
+-6 *Present your results*
+
+Let's come back to a suitable plot for a Chi-square test. Two options are mosaicplots or Cohen plots.
+
+Mosaic plot
+
+```{r mosaic_plot, exercise = TRUE}
+
+
+
+```
+
+Cohen Plot
+
+```{r, cohen_plot, exercise = TRUE}
+
+assocplot(as.matrix(woodlice))
+
+```
+
+
+
+
+```{r quiz1}
 quiz(
-  question("Which package contains functions for installing other R packages?",
-    answer("base"),
-    answer("tools"),
-    answer("utils", correct = TRUE),
-    answer("codetools")
+  question_numeric("",
+                   answer(, correct = TRUE)
   ),
-  question("Which of the R packages listed below are used to create plots?",
-    answer("lattice", correct = TRUE),
-    answer("tools"),
-    answer("stats"),
-    answer("grid", correct = TRUE)
-  )
+  question_radio("",
+                 answer(),
+                 answer(, correct = TRUE),
+                 answer(),
+                 answer(),
+                 answer(),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_checkbox("Select all ..",
+                    answer(, correct = TRUE),
+                    answer(, correct = FALSE),
+                    answer(, correct = TRUE),
+                    random_answer_order = TRUE,
+                    allow_retry = TRUE)
+  
+)
+```
+
+
+
+
+## Comparing between two categorical variables
+
+### Example analysis
+
+**Here's an example analysis ... **
+
+-1 *Ask your question*
+
+-2 *Check and explore your data*
+
+```{r ,exercise = TRUE}
+
+```
+
+```{r ,exercise = TRUE}
+
+```
+
+```{r -solution, exercise.reveal_solution = TRUE}
+
+```
+
+```{r , exercise=TRUE}
+
+```
+
+```{r , exercise=TRUE}
+
+```
+
+```{r -solution, exercise.reveal_solution = TRUE}
+
+```
+
+-3 *Write your Null Hypothesis - H0*
+
+There is no difference ...
+
+-4 *Decide on your stats test*
+
+```{r , exercise=TRUE}
+
+```
+
+-5 *Do test and check significance value*
+
+```{r , exercise=TRUE}
+```
+
+
+-6 *Present your results*
+
+```{r quiz2}
+quiz(
+  question_numeric("",
+                   answer(, correct = TRUE)
+  ),
+  question_radio("",
+                 answer(),
+                 answer(, correct = TRUE),
+                 answer(),
+                 answer(),
+                 answer(),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_checkbox("Select all ..",
+                    answer(, correct = TRUE),
+                    answer(, correct = FALSE),
+                    answer(, correct = TRUE),
+                    random_answer_order = TRUE,
+                    allow_retry = TRUE)
+  
 )
 ```
 

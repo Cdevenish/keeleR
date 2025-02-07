@@ -31,6 +31,26 @@ help(package = keeleR)
 ## for example, to run the first tutorial:
 learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR", shiny_args = list(launch.browser = TRUE))
 
+## To run others, just substitute the name of the tutorial between the quotes above.
+
 ```
 
 
+## Lazy copy :)
+``` r
+
+# Install packages
+install.packages("remotes")
+remotes::install_github("https://github.com/Cdevenish/keeleR")
+
+# Install keeleR library
+library(keeleR)
+
+# For a list of tutorials check out the home page:
+help(package = keeleR)
+
+
+## To run a tutorial, e.g. the first one:
+learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR", shiny_args = list(launch.browser = TRUE))
+
+```

@@ -15,7 +15,19 @@ NULL
 #' An introduction to using R for t-tests and ANOVA, Wilcoxon and Kruskal-Wallis tests.
 #' @keywords R
 #' @examples
+#' \dontrun{
 #' learnr::run_tutorial("A1_Comparing_between_groups", package = "keeleR")
+#' }
+NULL
+#' @name A2_Relationships_between_variables
+#' @title  A2 Relationships and associations between variables
+#' @description
+#' An introduction to using R for correlations (Pearson, Spearman) and tests of association (Chi-square).
+#' @keywords R
+#' @examples
+#' #' \dontrun{
+#' learnr::run_tutorial("A2_Relationships_between_variables", package = "keeleR")
+#' }
 NULL
 #' @name M1_Intro_to_multivariate
 #' @title Intro to multivariate data in R
