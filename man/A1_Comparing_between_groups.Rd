@@ -7,6 +7,8 @@
 An introduction to using R for t-tests and ANOVA, Wilcoxon and Kruskal-Wallis tests.
 }
 \examples{
+\dontrun{
 learnr::run_tutorial("A1_Comparing_between_groups", package = "keeleR")
+}
 }
 \keyword{R}

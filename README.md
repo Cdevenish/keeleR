@@ -36,7 +36,7 @@ learnr::run_tutorial("A0_First_steps_in_R", package = "keeleR", shiny_args = lis
 ```
 
 
-## Lazy copy :)
+## Lazy copy all :)
 ``` r
 
 # Install packages
