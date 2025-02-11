@@ -335,6 +335,9 @@ You have counted how many individuals of three arthropod groups (ants, aphids an
 
 We are interested in whether there is a relationship between aquatic invertebrate species richness and distance to urban areas along rivers in the south of the UK. We have data from surveys along five rivers, at different distances from cities. From the survey data, you have estimated total species richness. This may inform further studies on possible sources of pollution in rivers. There are many different potential factors involved and we are just interested in whether there is a correlation for the moment.
 
+![Freshwater invertebrates - non-insect orders (credit below)](images/nhm_invertebrate_groups.png){width=60%}  
+
+
 -1 *Ask your question*
 
 Is there a correlation between estimated invertebrate species diversity and distance to urban centres along rivers in the UK. In other words, is there higher or lower species diversity as we get further from cities.
@@ -610,3 +613,5 @@ What did you find?
 
 ## Credits
 [Woodlouse photo by Franco Folini - San Francisco, California, CC BY 2.5](https://commons.wikimedia.org/w/index.php?curid=789616)
+
+[Freshwater invertebrates From "A guide to identifying common freshwater invertebrate groups" Pieterse et al. Natural History Museum](https://www.nhm.ac.uk/take-part/identify-nature/guide-identifying-common-freshwater-invertebrate-groups.html) 
