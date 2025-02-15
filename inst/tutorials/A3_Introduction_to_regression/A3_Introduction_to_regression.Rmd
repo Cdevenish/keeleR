@@ -373,7 +373,6 @@ page_fillable(
       v$pred <- v$intercept + v$slope * data$x
       v$resid <- v$pred - data$y
       v$total <- data$x - mean(data$y) # for total SS
-      v$model <- v$pred - mean(data$y) # model residuals
       # And clear the first click so the next click starts a new line.
       v$click1 <- NULL
     }
@@ -408,7 +407,7 @@ page_fillable(
       "Use radio buttons to display residuals"
     } else {
       #paste0("Sum of squares = ", signif(sum(v$resid^2), 3))
-      paste0("R", tags$sup("2"), " = ", signif(sum(v$model^2)/sum(v$total^2), 3))
+      paste0("R", tags$sup("2"), " = ", signif((sum(v$total^2) - sum(v$resid^2)) /sum(v$total^2), 3))
     }
   })
   output$slope <- renderText({
