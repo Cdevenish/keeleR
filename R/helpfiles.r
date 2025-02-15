@@ -25,8 +25,18 @@ NULL
 #' An introduction to using R for correlations (Pearson, Spearman) and tests of association (Chi-square).
 #' @keywords R
 #' @examples
-#' #' \dontrun{
+#' \dontrun{
 #' learnr::run_tutorial("A2_Relationships_between_variables", package = "keeleR")
+#' }
+NULL
+#' @name A3_Introduction_to_regression
+#' @title  A3 Introduction to regression
+#' @description
+#' An introduction to using R for simple linear regression.
+#' @keywords R
+#' @examples
+#' \dontrun{
+#' learnr::run_tutorial("A3_Introduction_to_regression", package = "keeleR")
 #' }
 NULL
 #' @name M1_Intro_to_multivariate

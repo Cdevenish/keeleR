@@ -1,0 +1,564 @@
+---
+title: "Introduction to regression"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Thinking about models
+
+#### Regression lines as models
+
+Regression analysis is often called statistical modelling. What does this mean? A model is just a convenient, usually simplified, representation of reality. A regression model can be as simple as drawing a line of best fit through a scatter plot. Why is this useful? For example, we could use a regression model to predict the volume of a tree if given its diameter at breast height. This might be a quick way of estimating carbon storage in trees by just measuring the diameter at breast height, which is much easier than measuring tree volume. Suppose that we have some previous data, or that we'd carried out a pilot project to obtain actual data on tree volume and diameter, then we could plot the relationship between volume and diameter like this:
+
+```{r treeplot1, echo = FALSE, out.width = "70%"}
+library(ggplot2)
+trees_metric <- data.frame(Diameter = trees$Girth/2.54, Height = trees$Height*0.3048, Volume = trees$Volume*0.028317)
+ggplot(trees_metric, aes(Diameter, Volume))+
+  geom_point()+
+  xlab("Tree diameter at breast height (cm)")+
+  ylab(expression(Tree~volume~(m^3)))+
+  annotate("text", x = 7.5, y = 0.5, label = "A", size = 10)
+```
+
+Given that this looks like a linear relationship, we could draw a line of best fit, like this:
+
+```{r treeplot2, echo = FALSE, out.width = "70%"}
+#library(ggplot2)
+#trees_metric <- data.frame(Diameter = trees$Girth/2.54, Height = trees$Height*0.3048, Volume = trees$Volume*0.028317)
+lm1 <- lm(Volume ~ Diameter, data = trees_metric)
+coef <- coef(lm1)
+
+library(patchwork)
+
+p1 <- ggplot(trees_metric, aes(Diameter, Volume))+
+  geom_point()+
+  xlab("Tree diameter at breast height (cm)")+
+  ylab(expression(Tree~volume~(m^3)))+
+  geom_abline(intercept = coef[1], slope = coef[2], col = "darkblue", lwd= 1)
+  # ylim(c(-1,2.25))+
+  # xlim(c(0, 8))
+
+p1_1 <- p1 +
+  annotate("text", x = 7.5, y = 0.5, label = "B", size = 10)
+
+p2 <- ggplot(trees_metric, aes(Diameter, Volume))+
+  geom_point()+
+  xlab("")+
+  ylab("")+
+  geom_abline(intercept = coef[1], slope = coef[2], col = "darkblue", lwd= 1)+
+  ylim(c(-1,2.25))+
+  xlim(c(0, 8.2))+
+  theme(panel.background = element_rect(fill = "grey80"),
+        axis.title = element_blank())
+
+p1_1 + patchwork::inset_element(p2, left = 0.01, top = 0.99, bottom = 0.62, right = 0.38)
+
+```
+
+Now, if we obtained another measurement of diameter from a tree of unknown volume, then we could use this line to predict its volume. For example, if we had a tree with a diameter of 6 cm, then we could read off the volume by drawing a vertical line from 6 cm on the x-axis to our line, and then drawing a horizontal line across to the corresponding volume on the y-axis. Like this:
+
+```{r treeplot3, echo = FALSE, out.width = "70%"}
+# library(ggplot2)
+# trees_metric <- data.frame(Diameter = trees$Girth/2.54, Height = trees$Height*0.3048, Volume = trees$Volume*0.028317)
+# lm1 <- lm(Volume ~ Diameter, data = trees_metric)
+# coef <- coef(lm1)
+
+ymax <- predict(lm1, data.frame(Diameter = 6))
+
+ggplot(trees_metric, aes(Diameter, Volume))+
+  geom_point()+
+  xlab("Tree diameter at breast height (cm)")+
+  ylab(expression(Tree~volume~(m^3)))+
+  geom_abline(intercept = coef[1], slope = coef[2], col = "darkblue", lwd= 1)+
+  geom_line(data = data.frame(Diameter = c(6,6), Volume = c(0,ymax*.95)), arrow = arrow(), lty= 1,lwd = 1)+
+  geom_line(data = data.frame(Diameter = c(6*.98,3), Volume = c(ymax,ymax)), arrow = arrow(ends = "first"), lty= 1, lwd = 1)+
+  #geom_text(data = data.frame(Diameter = 3, Volume = ymax),label = round(ymax, 2), nudge_x = -0.5)+
+  scale_y_continuous(limits = c(0,2.25), 
+                     breaks = c(0, 0.5, 1, 1.14, 1.5, 2), 
+                     minor_breaks = seq(0, 2.25, 0.25))+
+  scale_x_continuous(limits = c(3,8.5))+
+  coord_cartesian(clip = "off")+
+  theme(panel.grid.minor = element_blank())+
+  annotate("text", x = 7.5, y = 0.25, label = "C", size = 10)
+```
+
+Here we can see that the volume of a tree with a diameter of 6 cm, as predicted by our line of best fit, in other words, our regression model, would be 1.14 m^3^.
+
+Our model is the line of best fit. We can see it's just a model as reality is represented by the black dots on the graph, the real values for volume and height. The regression line rarely passes right through the centre of a black dot. This distance of the dot from the line is the difference between our model and reality, in other words, the difference between our observed values (reality) and our expected values (from the model, or regression line). This difference can be translated into a statistical concept known as **residuals**. How large these residuals are (how far our model is from reality) can help us evaluate how good our model is.
+
+#### A final thought on models
+
+You've actually already done a lot of statistical modelling! Every time you calculate the mean of some numbers, you are creating a statistical model. Your model is the mean value - without any other information (or assuming an approximate normal distribution), your best prediction for a new value that is part of your set of numbers would be the mean!
+
+Let's think that you have this set of numbers, plotted below, you can see that their values are somewhere between 20 and 35.
+```{r mean_model1}
+set.seed(99)
+x <- rnorm(10, 30, 5)
+
+op <- par(mar = c(1,3,1,1), oma = c(0,0,0,0))
+plot(x,
+     xlab = "",
+     ylab = "",
+     pch = 16,
+     ylim = c(10, 40),
+     xlim = c(-5, 15),
+     xaxt = "n")
+par(op)
+```
+
+To summarise those numbers, you could take the mean. Let's draw a line at the mean value:
+
+```{r mean_model2}
+# set.seed(99)
+# x <- rnorm(10, 30, 5)
+op <- par(mar = c(1,3,1,1), oma = c(0,0,0,0))
+plot(x,
+     xlab = "",
+     ylab = "",
+     pch = 16,
+     ylim = c(10, 40),
+     xlim = c(-5, 15),
+     xaxt = "n")
+abline(h = mean(x), col = "blue", lwd = 1.5)
+par(op)
+```
+
+So, if someone asked you to predict the value of a new element to your set of numbers, the most likely value would be the mean. The mean, in a similar way to our model above, is our expected value. And as we did above, you can look at how close each observation (the black points) is to the expected value (or mean). This is actually how we measure the variability of our values about the mean, in what we call the `standard deviation`.
+
+## Simple linear regression in R
+
+Let's continue with the example of the cherry trees. The data actually consist of measurements made from timber from 31 felled Black Cherry trees. As you can imagine, it would be much more useful to be able to establish the volume of a tree without having to cut it down! As seen above, we can do this using linear regression.
+
+We will deviate a little bit from our standard analysis protocol, but most of the steps are the same. As always, we first need to establish our question.
+
+-1 *Ask your question*
+
+Our question has two parts to it this time. First, we need to know whether a suitable relationship exists between volume and diameter that will allow us to make predictions of volume. Second, if we establish this 'working relationship', then we can use it to predict volumes for which we only have data on diameter.
+
+
+-2 *Check and explore your data*
+
+As always, we need to load and check our data. Our data this time is in the `.rdata` format. This is the zipped format for storing R objects directly on disk. You can use the `save()` function to write data to your computer, and the `load()` function to load the R objects directly into your environment.
+
+A useful tip when you start a new analysis or project, is to make sure your environment is clear from any other objects left over from previous analysis. You can run `rm(list = ls())` to remove all objects. **CAREFUL!!!!** This will delete all objects from your memory.
+
+The data frame is called `tree_data`. Load this into your session, using `load()`. Use the path to your zipped *cherry_tree.rdata* file inside the function.
+
+```{r import_data, exercise = TRUE}
+
+load("data/cherry_trees.rdata")
+head(tree_data)
+
+```
+
+This is already a `data.frame`. Explore the data here. What data types do you have? How many observations are there? Are there any outliers or unusual data points?
+
+```{r explore_tree, exercise = TRUE, exercise.setup = "import_data"}
+
+
+
+```
+
+```{r explore_tree-hint-1}
+
+head(tree_data)
+str(tree_data)
+
+plot(tree_data$Diameter)
+plot(tree_data$Volume)
+
+boxplot(tree_data$Diameter)
+boxplot(tree_data$Volume)
+
+```
+
+As a final exploration, make a histogram of the volume data. Does it look approximately normal?
+
+```{r vol_hist, exercise = TRUE, exercise.setup = "import_data"}
+
+```
+
+
+```{r vol_hist-hint-1}
+# put tree_data$Volume into ... 
+hist()
+
+```
+
+```{r vol_hist-solution}
+
+hist(tree_data$Volume)
+
+```
+
+
+Remember we are interested in the relationship between volume and diameter (similar to the correlation analysis). The first step is to plot these two variables against each other. Complete the code below to plot volume against height. Use the `plot()` function.
+
+```{r plot_tree, exercise = TRUE, exercise.setup = "import_data"}
+
+plot(tree_data$Diameter, )
+
+```
+
+```{r plot_tree-solution}
+
+plot(tree_data$Diameter, tree_data$Volume)
+
+```
+
+Notice we have plotted the diameter on the x-axis and the volume on the y-axis. There is a reason for this. In correlation, it doesn't really matter which way round you plot the variables. But for regression, it is important. The variable we are interested in is volume - we want to use this to calculate carbon storage. We are interested in predicting volume from diameter (which we have *measured*). Normally, our **predictor variables**, which we measure, go on the x-axis, while the **response variable**, or the variable of interest, goes on the y-axis. Note that the predictors are also known as *independent variables* while the response is also known as the *dependent* variable.
+
+Another way of looking at this relationship, is to say that we are interested in **volume** *as a function of* **diameter**. In other words, how would we have to modify diameter to obtain volume (we'll come back to this later).
+
+We can actually use this way of wording the relationship in the `plot` function, by using a `formula` first, and then a `data` argument. The formula is in the form `y ~ x`, read that as, `y` as a function of `x`. The `data =` argument tells R where to find the variables. Look how this works in the `plot` function.
+
+```{r plot_formula, exercise = TRUE, exercise.setup = "import_data"}
+
+plot(Volume ~ Diameter, data = tree_data) # same plot!
+
+```
+
+We will use this formula interface again in the regression function below.
+
+Look at the plot (and the small inset figure in plot B above). It is useful to think about what to expect in your regression analysis. This may help detect any strange results you get due to mistyping or making a mistake in the code. Check what to look for by answering these questions:
+
+```{r quiz1}
+quiz(  
+  question_radio("Does it look like there is a linear relationship between our two variables?",
+                 answer("No"),
+                 answer("Yes", correct = TRUE),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_radio("Is the relationship between diameter and volume positive or negative?",
+                 answer("Negative"),
+                 answer("Positive", correct = TRUE),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_radio("Which of these terms describes the relationship between diameter and volume in the context of regression?",
+                 answer("Rise"),
+                 answer("Slope", correct = TRUE),
+                 answer("Raise"),
+                 answer("Gradient"),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_radio("Look back at the small inset figure in plot B above (the second plot of the first section). Where does the blue line of best fit meet the vertical, or y-axis? Is it above zero (positive) or below zero (negative)?",
+                 answer("Positive"),
+                 answer("Negative", correct = TRUE),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE)
+)
+```
+
+
+
+We'll come back to the answers to these questions below when we interpret the results of our regression analysis.
+
+-3 *Decide on your stats test*
+
+We've established that linear regression is appropriate, i.e.,
+
+* we have a numeric response variable (tree volume)  
+* the response is approximately normally distributed  
+* we think there is a potential linear relationship between the variables)  
+
+Now run the code for the regression. The function is `lm()`. This stands for linear model. The `lm()` function takes the same *__formula interface__* as we used in the plot function above. The first part is the formula, here it is Volume as a function of Diameter (`Volume ~ Diameter`) and the data comes from our `tree_data` object.
+
+Notice that we are assigning the output of the regression function to an object to contain all the results. Here, we are calling this 'results container' `lm1`. Remember that you can call the output (left-hand side of the `<-` arrow) almost anything you want. But keep it short and meaningful!! i.e. Less typing and it will help you remember what it is! And don't start with numbers or symbols!
+
+-4 *Run the test*
+
+Run this code to perform your linear regression!
+
+```{r regression1, exercise = TRUE, exercise.setup = "import_data"}
+
+lm1 <- lm(Volume ~ Diameter, data = tree_data)
+
+```
+
+Now let's have a look at the summary of the results. Run `summary()` with your regression output, `lm1`.
+
+```{r regression_out, exercise = TRUE, exercise.setup = "regression1"}
+
+
+```
+
+```{r regression_out-solution, exercise.reveal_solution = TRUE}
+
+summary(lm1)
+
+```
+
+-5 *Interpret your results*
+
+#### What can you see?
+
+First, the original call, that is, what we put into our `lm` function. Then something about the `Residuals` (we'll come back to this later). Next the `Coefficients`. In a simple linear regression, the two coefficients correspond to the slope (labelled here with *Diameter*) and the intercept of the line of best fit. You might remember these from you school maths class! The **intercept** is where the line crosses the vertical or y-axis, and the **slope** is the gradient (or slope!) of the line (that is, rise over run: how much the slope climbs or descends by unit length). Notice that the 'estimate' of the slope (0.364) is positive (as we predicted from our scatter plot) and that the 'estimate' of the intercept (-1.046) is negative (also as we saw from the plot above, that is, the line of best fit crosses the y-axis below 0). We'll come back to what these mean in our regression model below.
+
+First, look at the other results. We also have an F value, some degrees of freedom (29) and a further p-value (`p-value: < 2.2e-16`). Is the p-value below our usual threshold of 0.05? You can think of this as a general test for whether the whole, overall model is a good fit to our data. (You also have significant values for the intercept and slope above). It's always a good idea to check this part first, if your model isn't significant, then you may have a problem somewhere. Finally, in the last part of the output you can see a value for the R^2^ (0.93). This tells us about how close our line of best fit is to our real data values (the observed values). It ranges from 0 to 1 (or as a percentage, from 0 to 100%). Another way of looking at this value is how much of the variation in our data is explained by the independent variables (or predictors). In our case, it's just one - Diameter. This means that 93% of the variation in Volume is explained by Diameter - that's a very high amount. The rest is unexplained variance (7%). Normally we would report the adjusted R^2^ which takes into account how many predictors we use in the model.
+
+
+#### Visualising the model outputs
+
+
+```{r shiny1, echo = FALSE}
+page_fillable(
+  # Application title
+
+  card(
+
+    card_title("Draw a line of best fit through the points"),
+
+    p("Click on the plot to draw the start and end of a line of best fit.\nLook at the model outputs for your line. Click again to draw a new line."),
+    
+    # Show a plot of the generated distribution
+    plotOutput("plot", click = "plot_click"),
+    
+    radioButtons("residuals", "Show residuals",
+                 choices = c("None", "Residuals"), selected = "None"
+    ),
+     
+    card(
+      card_title("Model outputs"),
+      htmlOutput("SumSq"),
+      textOutput("slope"),
+      textOutput("intercept")
+      ),
+    
+    p("Draw a new line and try to improve your fit!"),
+    
+    checkboxInput("best", "Show best model")
+    
+  )
+    )
+
+```
+
+
+```{r shiny2, context = "server"}
+
+  # make some data
+  set.seed(Sys.Date())
+  data <- data.frame(x = 1:10, y = rnorm(10, 1:10))
+  xlab <- "Predictor"
+  ylab <- "Response"
+
+  v <- reactiveValues(
+    click1 = NULL, # Represents the first mouse click, if any
+    intercept = NULL, # After two clicks, this stores the intercept
+    slope = NULL, # after two clicks, this stores the slope,
+    pred = NULL,
+    resid = NULL
+  )
+
+  # Handle clicks on the plot
+  observeEvent(input$plot_click, {
+    if (is.null(v$click1)) {
+      # We don't have a first click, so this is the first click
+      v$click1 <- input$plot_click
+    } else {
+      # We already had a first click, so this is the second click.
+      # Make slope and intercept from the previous click and this one.
+      v$slope <- (input$plot_click$y - v$click1$y) / (input$plot_click$x - v$click1$x)
+      v$intercept <- (input$plot_click$y + v$click1$y) / 2 - v$slope * (input$plot_click$x + v$click1$x) / 2
+
+      # predictions & residuals
+      v$pred <- v$intercept + v$slope * data$x
+      v$resid <- v$pred - data$y
+      v$total <- data$x - mean(data$y) # for total SS
+      v$model <- v$pred - mean(data$y) # model residuals
+      # And clear the first click so the next click starts a new line.
+      v$click1 <- NULL
+    }
+  })
+
+
+  output$plot <- renderPlot({
+    par(cex = 1.5, mar = c(3, 3, 1, 1), tcl = -0.1, mgp = c(2, 0.2, 0))
+    plot(data, pch = 16, xlab = xlab, ylab = ylab)
+    if (input$best) {
+      mod <- lm(y ~ x, data = data)
+      abline(mod, col = "navy", lty = "dashed")
+    }
+    if (!is.null(v$intercept)) {
+      abline(a = v$intercept, b = v$slope)
+      if (input$residuals == "Residuals") {
+        segments(
+          x0 = data$x,
+          x1 = data$x,
+          y0 = data$y,
+          y1 = v$pred
+        )
+      }
+    }
+  })
+  output$SumSq <- renderText({
+    if (is.null(v$click1) && is.null(v$intercept)) { # initial state
+      "Click on the plot to start a line"
+    } else if (!is.null(v$click1)) { # after one click
+      "Click again to finsh a line"
+    } else if (input$residuals == "None") {
+      "Use radio buttons to display residuals"
+    } else {
+      #paste0("Sum of squares = ", signif(sum(v$resid^2), 3))
+      paste0("R", tags$sup("2"), " = ", signif(sum(v$model^2)/sum(v$total^2), 3))
+    }
+  })
+  output$slope <- renderText({
+    if (!is.null(v$slope)) {
+      paste0("Slope = ", signif(v$slope, 3))
+    } else {
+      ""
+    }
+  })
+  output$intercept <- renderText({
+    if (!is.null(v$intercept)) {
+      paste0("Intercept = ", signif(v$intercept, 3))
+    } else {
+      ""
+    }
+  })
+
+```
+
+#### Checking model assumptions
+
+Before we move on to prediction or reporting the results, we need to check some of the assumptions behind a linear model. This is similar to checking normality before doing a t-test or correlation. We want to check that our residuals are normally distributed (this is a better check than looking at the distribution of the response) and that no observation is having an extreme effect on the model. We also should check that the variance of the residuals is not unequal across the predicted values (we'll check this graphically below).
+
+A quick way to do this in R is to plot the object containing the results of our model (in this case, `lm1`). In the code below, we first divide the plotting region into a 2 x 2 grid, so that all four evaluation plots fit onto one page. After the plot, we reset the plotting region to how it was before.
+
+```{r, mod_check, exercise = TRUE, exercise.setup = "regression1"}
+
+op <- par(mfrow = c(2,2))
+
+plot(lm1)
+
+par(op)
+
+```
+
+The plots on the left shouldn't show any strong pattern (some say you should see a starry night). You especially don't want to see a funnel shape from either left-to-right or right-to-left. On the Q-Q plot, the points (residuals) should follow the line if they are normally distributed. An alternative to this plot is plotting a histogram of the residuals (e.g. `hist(lm1$residuals)`). Try it! Finally, on the lower right plot, a rule of thumb is that points shouldn't be beyond the dashed lines. Here we can see one point is quite distant from the others and almost beyond the last dashed line. You might want to re-run the model without this point and see if it makes a large difference on the result. 
+
+
+#### Prediction
+
+Do you remember an equation of a line? 
+
+You might have seen it in a form something like this:
+
+$$ y = c + mx $$
+Where $c$ is the intercept and $m$ is the slope, $x$ are our observed values (i.e. Diameter of the tree - on the x-axis), and $y$ will be our predicted values. For example, to draw the line, we need to know the intercept and slope, and then for a range of x values, we can calculate y, and then plot these on the graph.
+
+For example, for values of x in the table below, we can use our values of `intercept = -1.046` and `slope = 0.364` in the equation to calculate y:
+
+x value | calculation | y value  
+:--------:|:-------------:|:--------:
+4.0 | = -1.046 + (0.364 x 4.0) | -0.682
+5.1 | = -1.046 + (0.364 x 5.1) |
+5.5 | |
+6.2 | |
+
+Using R as a calculator. Calculate the rest of these values for y (predicted values). 
+
+```{r predictY, exercise = TRUE}
+
+```
+
+
+```{r predictY-hint-1}
+# Run this code!
+-1.046 + (0.364 * 5.1)
+
+```
+
+```{r predictY-solution, exercise.reveal_solution = TRUE}
+-1.046 + (0.364 * 5.1)
+-1.046 + (0.364 * 5.5)
+-1.046 + (0.364 * 6.2)
+
+```
+
+If we plot these x and y values, you'll see they are part of the straight line that models our relationship between Volume and Diameter. This is exactly what we do when we want to predict values of tree volume for which we only know the diameter.
+
+The new predicted values are plotted in red asterisks on the plot below. Note that they are exactly on our line.
+
+```{r, plot_predy, echo = FALSE}
+new_x <- data.frame(Diameter = c(4.0, 5.1, 5.5, 6.2))
+
+new_x$Volume <- predict(lm1, new_x)
+
+p1 +
+  geom_point(data = new_x, col = "red", shape = 8, size = 3.5)
+
+```
+
+
+Fortunately, there is a function in R that will do this for us: `predict()`. To use the predict function, we need to create a data.frame of new x values. In our example, these will be diameters of trees that we have measured, for which we want to calculate the volume.
+
+
+Here is the function to create a data frame. We are going to add one column to this data frame, note that it is called 'Diameter', it must have exactly the same name as the predictor in our model. We will add the same values as above, using the `c()` function.
+```{r make_df, exercise = TRUE, exercise.setup = "regression1"}
+
+new_x <- data.frame(Diameter = c(4.0, 5.1, 5.5, 6.2))
+
+```
+
+Have a look at the `data.frame` you've just created here:
+
+```{r print_new_x, exercise= TRUE, exercise.setup = "make_df"}
+
+```
+
+```{r print_new_x-solution, exercise.reveal_solution = TRUE}
+new_x
+
+```
+
+To use the predict function, we first add the model object, `lm1`, and then the new data. You should see the same values that you calculated above.
+
+```{r predict_lm, exercise= TRUE, exercise.setup = "make_df"}
+
+predict(lm1, new_x)
+
+```
+
+Suppose you measured 5 new trees and found diameters of 3.23, 4.44, 6.5 and 7.1. Use your model to predict the values of Volume. Make a new `data.frame` first.
+
+```{r predict2, exercise = TRUE, exercise.setup = "regression1"}
+
+
+```
+
+```{r predict2-solution, exercise.reveal_solution = TRUE}
+
+# Make a new data frame (you don't have to call it new_x)
+new_x <- data.frame(Diameter = c(3.23, 4.44, 6.5, 7.1))
+
+# Predict values from your model
+predict(lm1, new_x)
+
+```
+
+
+We often use this form of the equation when we talk about regression, rather than the version shown above:
+
+$$ \hat{y} = \beta_0 + \beta_1x$$
+You may see this in statistics text books or online documentation. The $\beta$ symbols are the model coefficients, that is, $\beta_0$ is the intercept, and $\beta_1$ is the slope.
+
+
+-6 *Present your results*
+
+Finally, we want to present our results. We can present results from the overall model and it's R^2^ value, and results from our predictor (Diameter). We could also present a graphic with the observed values and the line of best fit, including a confidence limit or standard error around the line.
+
+We found a good fit for a linear regression between cherry tree diameter and volume (F = 419.4~1,29~, p < 0.001) with an adjusted R^2^ of 0.93. Diameter was positively related to volume and highly significant (Coefficient = 0.36, se = 0.02, p < 0.001).
+
+
+## Your turn! A regression analysis
+
+
+

@@ -7,7 +7,7 @@
 An introduction to using R for correlations (Pearson, Spearman) and tests of association (Chi-square).
 }
 \examples{
-#' \dontrun{
+\dontrun{
 learnr::run_tutorial("A2_Relationships_between_variables", package = "keeleR")
 }
 }
