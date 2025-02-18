@@ -24,7 +24,7 @@ lm1 <- lm(Volume ~ Diameter, data = tree_data)
 Regression analysis is often called statistical modelling. What does this mean? A model is just a convenient, usually simplified, representation of reality. A regression model can be as simple as drawing a line of best fit through a scatter plot. Why is this useful? For example, we could use a regression model to predict the volume of a tree if given its diameter at breast height. This might be a quick way of estimating carbon storage in trees by just measuring the diameter at breast height, which is much easier than measuring tree volume. Suppose that we have some previous data, or that we'd carried out a pilot project to obtain actual data on tree volume and diameter, then we could plot the relationship between volume and diameter like this:
 
 ```{r treeplot1, echo = FALSE, out.width = "70%"}
-suppressPackageStartupMessages(library(ggplot2))
+suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
 trees_metric <- data.frame(Diameter = trees$Girth/2.54, Height = trees$Height*0.3048, Volume = trees$Volume*0.028317)
 ggplot(trees_metric, aes(Diameter, Volume))+
   geom_point()+
@@ -562,38 +562,15 @@ predict(lm1, new_x)
 
 ```
 
-Suppose you measured 5 new trees and found diameters of 3.23, 4.44, 6.5 and 7.1. Use your model to predict the values of Volume. Make a new `data.frame` first.
+An important feature of the `predict()` function is that it can also calculate the confidence interval about our predicted values, or the standard error. You can do this with the `interval = "confidence"` or `se.fit = TRUE` arguments, respectively. The output of the confidence intervals is more convenient. Re-run the above code to predict those four values including the standard error. 
 
-```{r predict2, exercise = TRUE, exercise.setup = "regression1"}
-
-
-```
-
-```{r predict2-solution, exercise.reveal_solution = TRUE}
-
-# Make a new data frame (you don't have to call it new_x)
-new_x <- data.frame(Diameter = c(3.23, 4.44, 6.5, 7.1))
-
-# Predict values from your model
-predict(lm1, new_x)
-
-```
-
-An important feature of the `predict()` function is that it can also calculate the confidence interval about our predicted values, or the standard error. You can do this with the `interval = "confidence"` or `se.fit = TRUE` arguments, respectively. The output of the confidence intervals is more convenient. Re-run the above code to predict those four values including the confidence intervals. 
-
-<<<<<<< HEAD
-```{r pred_conf, exercise = TRUE, exercise.setup = "mod"}
-=======
-```{r pred_conf, exercise = TRUE}
->>>>>>> 59bdb1adb2c708b4723cce9ae07d826765d5ee28
-
-
+```{r pred_conf, exercise = TRUE, exercise.setup = "predict_lm"}
 
 ```
 
 ```{r pred_conf-solution}
 
-predict(lm1, new_x, interval = "confidence")
+predict(lm1, new_x, se.fit = TRUE)
 
 ```
 
@@ -635,11 +612,8 @@ seq(1,10,2)
 
 We'll create a new data frame (as above when you created the `new_x`), but this time with a sequence of values for Diameter, from 3 to 9, in steps of 0.1. Run the code and add a line to view the first lines of the data frame:
 
-<<<<<<< HEAD
 ```{r make_data_range, exercise = TRUE, exercise.setup = "regression1"}
-=======
-```{r make_data_range, exercise = TRUE}
->>>>>>> 59bdb1adb2c708b4723cce9ae07d826765d5ee28
+
 predict_range <- data.frame(Diameter = seq(3,9,0.1))
 
 ```
@@ -661,11 +635,7 @@ head(predicted_values)
 
 For convenience, we'll add the fitted (predicted) values, the lower and upper confidence limits to the sequence of values. Note how we overwrite our original `predicted_values` object.
 
-<<<<<<< HEAD
 ```{r add_pred, exercise = TRUE, exercise.setup = "predict_range"}
-=======
-```{r add_pred, exercise = TRUE}
->>>>>>> 59bdb1adb2c708b4723cce9ae07d826765d5ee28
 
 predicted_values <- cbind(predict_range, predicted_values)
 
@@ -675,11 +645,7 @@ Finally, we can use the `predicted_values` data.frame to draw our plot. First th
 
 Run the code to see the plot. Can you add on some axis labels in the first `plot` function? Use `xlab = ""`, and `ylab = ""`. Put your labels inside the quotes.
 
-<<<<<<< HEAD
 ```{r final_plot, exercise = TRUE, exercise.setup = "add_pred"}
-=======
-```{r final_plot, exercise = TRUE}
->>>>>>> 59bdb1adb2c708b4723cce9ae07d826765d5ee28
 
 plot(Volume ~ Diameter, data = tree_data,
      xlim = c(3,9), ylim = c(0,2), pch = 16)
@@ -715,11 +681,9 @@ points(predicted_values$Diameter, predicted_values$lwr, type = "l",
 
 A different way of plotting uses the package `ggplot2`. Look at the code below and try to work out where we use the familiar data from above (Diameter, tree_data, Volume) as well as the regression formula and the regression function ("lm"). It's quicker to code (after you've learnt how!). We'll come back to ggplot later.
 
-<<<<<<< HEAD
-```{r ggplot_tree, exercise = TRUE}
-=======
+
+
 ```{r ggplot_tree, exercise = TRUE, exercise.set = "import_data"}
->>>>>>> 59bdb1adb2c708b4723cce9ae07d826765d5ee28
 
 library(ggplot2)
 
@@ -739,11 +703,6 @@ Download the `solar_temp.csv` file from the KLE.
 You have some data on mean monthly energy production of solar panels (`solarPV`) in kWh and mean monthly ambient temperature at the same sites (`temperature`) from a sample of domestic, roof-mounted photovoltaic panels. You are interested in predicting solar panel energy production at some specific temperatures for a client project. Use your data analysis skills to find out whether a relationship exists between energy production and ambient temperature, if so, predict the energy production for these temperatures: 9.0, 10.5, 15.0, 18.7, 25.1. Present your predicted results with standard errors, a graphic and the full results from the linear model in a paragraph. For bonus points, plot the predicted values as extra symbols on your figure. Don't forget to label all your axes correctly, including units.  :)
 
 What can you say about the confidence in your predictions, does it change across the predicted values? Why?
-<<<<<<< HEAD
-=======
-
->>>>>>> 59bdb1adb2c708b4723cce9ae07d826765d5ee28
-
 
 ## Credits
 
