@@ -36,7 +36,7 @@ Given that this looks like a linear relationship, we could draw a line of best f
 lm1 <- lm(Volume ~ Diameter, data = trees_metric)
 coef <- coef(lm1)
 
-library(patchwork)
+suppressWarnings(library(patchwork))
 
 p1 <- ggplot(trees_metric, aes(Diameter, Volume))+
   geom_point()+
@@ -131,7 +131,26 @@ abline(h = mean(x), col = "blue", lwd = 1.5)
 par(op)
 ```
 
-So, if someone asked you to predict the value of a new element to your set of numbers, the most likely value would be the mean. The mean, in a similar way to our model above, is our expected value. And as we did above, you can look at how close each observation (the black points) is to the expected value (or mean). This is actually how we measure the variability of our values about the mean, in what we call the `standard deviation`.
+So, if someone asked you to predict the value of a new element to your set of numbers, the most likely value would be the mean. The mean, in a similar way to our model above, is our expected value. And as we did above, you can look at how close each observation (the black points) is to the expected value (or mean). Here, you can see the distance from the mean, drawn as a line:
+
+```{r mean_model3}
+op <- par(mar = c(1,3,1,1), oma = c(0,0,0,0))
+plot(x,
+     xlab = "",
+     ylab = "",
+     pch = 16,
+     ylim = c(10, 40),
+     xlim = c(-5, 15),
+     xaxt = "n")
+abline(h = mean(x), col = "blue", lwd = 1.5)
+
+segments(x0 = seq_along(x), 
+         y0 = mean(x),
+         y1 = x)
+par(op)
+```
+
+This is also how we measure the variability of our values about the mean, in what we call the `standard deviation`.
 
 ## Simple linear regression in R
 
@@ -309,6 +328,8 @@ First, look at the other results. We also have an F value, some degrees of freed
 
 
 ```{r shiny1, echo = FALSE}
+
+## With thanks to https://biostats-r.github.io/shinystats/
 page_fillable(
   # Application title
 
@@ -459,7 +480,7 @@ For example, for values of x in the table below, we can use our values of `inter
 
 x value | calculation | y value  
 :--------:|:-------------:|:--------:
-4.0 | = -1.046 + (0.364 x 4.0) | -0.682
+4.0 | = -1.046 + (0.364 x 4.0) | 0.41
 5.1 | = -1.046 + (0.364 x 5.1) |
 5.5 | |
 6.2 | |
@@ -545,22 +566,149 @@ predict(lm1, new_x)
 
 ```
 
+An important feature of the `predict()` function is that it can also calculate the confidence interval about our predicted values, or the standard error. You can do this with the `interval = "confidence"` or `se.fit = TRUE` arguments, respectively. The output of the confidence intervals is more convenient. Re-run the above code to predict those four values including the confidence intervals. 
 
-We often use this form of the equation when we talk about regression, rather than the version shown above:
+```{r pred_conf, exercise = TRUE}
+
+
+
+```
+
+```{r pred_conf-solution}
+
+predict(lm1, new_x, interval = "confidence")
+
+```
+
+The **95% confidence interval** represents our confidence in the regression line, if we had 100 data sets from the same source (population) and ran this same analysis, then we'd expect our fitted line to be within these limits in at least 95 of those confidence intervals.
+
+If we assign the output of the `predict` function to an object, then we can use it to draw a line of best fit, with confidence intervals. We'll do that below as our final figure that would be suitable for a report or publication.
+
+Finally, we often use this form of the equation when we talk about regression, rather than the version shown above:
 
 $$ \hat{y} = \beta_0 + \beta_1x$$
-You may see this in statistics text books or online documentation. The $\beta$ symbols are the model coefficients, that is, $\beta_0$ is the intercept, and $\beta_1$ is the slope.
+
+You may see this in statistics text books or online documentation. The $\beta$ symbols are the model coefficients, that is, $\beta_0$ is the intercept, and $\beta_1$ is the slope.  
+
 
 
 -6 *Present your results*
 
 Finally, we want to present our results. We can present results from the overall model and it's R^2^ value, and results from our predictor (Diameter). We could also present a graphic with the observed values and the line of best fit, including a confidence limit or standard error around the line.
 
-We used a linear regression between cherry tree diameter and volume (F = 419.4~1,29~, p < 0.001, R^2^ = 0.93) to predict cherry tree volume. Diameter was positively related to volume and highly significant (Coefficient = 0.36, se = 0.02, p < 0.001).
+**We used a linear regression between cherry tree diameter and volume (F = 419.4~1,29~, p < 0.001, R^2^ = 0.93) to predict cherry tree volume. Diameter was positively related to volume and highly significant (Coefficient = 0.36, se = 0.02, p < 0.001).**
 
 There are plenty of other ways to present your results. Have a look in a couple of papers for some examples!
 
+#### A report figure
+Let's make a figure we could use to accompany the above results paragraph in a report. 
+
+First we will plot our points. Then we'll predict values over a range of `Diameter` values including the confidence limits. Then we'll plot our fitted line with those confidence limits as extra lines on the graph. Finally, we need to add proper axis labels.
+
+
+To make the range of values, we'll use the `seq()` function. This creates a **seq**uence of values from a starting point to an end point, at established intervals. For example, from 1 to 10, in intervals of 2: `seq(1,10,2)`. Try this code below!
+
+```{r seq_ex, exercise = TRUE}
+
+```
+
+```{r seq_ex-solution}
+seq(1,10,2)
+```
+
+We'll create a new data frame (as above when you created the `new_x`), but this time with a sequence of values for Diameter, from 3 to 9, in steps of 0.1. Run the code and add a line to view the first lines of the data frame:
+
+```{r make_data_range, exercise = TRUE}
+predict_range <- data.frame(Diameter = seq(3,9,0.1))
+
+```
+
+Now use this new data frame to predict your values of Volume with their confidence intervals. Run the code below and look inside the `predicted_values` you've created.
+
+```{r predict_range, exercise = TRUE, exercise.setup = "make_data_range"}
+
+predicted_values <- predict(lm1, newdata = predict_range, interval = "confidence")
+
+```
+
+```{r predict_range-solution}
+
+predicted_values <- predict(lm1, newdata = predict_range,interval = "confidence")
+head(predicted_values)
+
+```
+
+For convenience, we'll add the fitted (predicted) values, the lower and upper confidence limits to the sequence of values. Note how we overwrite our original `predicted_values` object.
+
+```{r add_pred, exercise = TRUE}
+
+predicted_values <- cbind(predict_range, predicted_values)
+
+```
+
+Finally, we can use the `predicted_values` data.frame to draw our plot. First the points, then three lines, the fitted line, the upper confidence interval and the lower confidence interval.
+
+Run the code to see the plot. Can you add on some axis labels in the first `plot` function? Use `xlab = ""`, and `ylab = ""`. Put your labels inside the quotes.
+
+```{r final_plot, exercise = TRUE}
+
+plot(Volume ~ Diameter, data = tree_data,
+     xlim = c(3,9), ylim = c(0,2), pch = 16)
+
+## add the fitted line (line of best fit)
+points(predicted_values$Diameter, predicted_values$fit, type = "l", lwd = 1.5) # note that type = "l" draws a line
+
+## Add the upper and lower confidence intervals
+points(predicted_values$Diameter, predicted_values$upr, type = "l", 
+       lty = 2, col = "grey60", lwd = 1.5) # note that lty = 2 draws a dashed line
+points(predicted_values$Diameter, predicted_values$lwr, type = "l",
+       lty = 2, col = "grey60", lwd = 1.5) 
+
+```
+
+
+```{r final_plot-solution}
+plot(Volume ~ Diameter, data = tree_data,
+     xlim = c(3,9), ylim = c(0,2), pch = 16,
+     xlab = "Diameter (m)",
+     ylab = expression(Volume~(m^3)))
+
+points(predicted_values$Diameter, predicted_values$fit, type = "l", lwd = 1.5)
+points(predicted_values$Diameter, predicted_values$upr, type = "l", 
+       lty = 2, col = "grey60", lwd = 1.5)
+points(predicted_values$Diameter, predicted_values$lwr, type = "l",
+       lty = 2, col = "grey60", lwd = 1.5) 
+
+
+```
+
+#### Extension in ggplot2
+
+A different way of plotting uses the package `ggplot2`. Look at the code below and try to work out where we use the familiar data from above (Diameter, tree_data, Volume) as well as the regression formula and the regression function ("lm"). It's quicker to code (after you've learnt how!). We'll come back to ggplot later.
+
+```{r ggplot_tree, exercise = TRUE}
+
+library(ggplot2)
+
+ggplot(tree_data, aes(x = Diameter, y = Volume))+
+  geom_point()+
+  geom_smooth(formula = y ~ x, method = "lm")
+
+```
+
+
+What happens to the confidence limits where there are few data points? What does this tell us about our predictions in these zones?
+
 ## Your turn! A regression analysis
 
+Download the `solar_temp.csv` file from the KLE.
 
+You have some data on mean monthly energy production of solar panels (`solarPV`) in kWh and mean monthly ambient temperature at the same sites (`temperature`) from a sample of domestic, roof-mounted photovoltaic panels. You are interested in predicting solar panel energy production at some specific temperatures for a client project. Use your data analysis skills to find out whether a relationship exists between energy production and ambient temperature, if so, predict the energy production for these temperatures: 9.0, 10.5, 15.0, 18.7, 25.1. Present your predicted results with standard errors, a graphic and the full results from the linear model in a paragraph. For bonus points, plot the predicted values as extra symbols on your figure. Don't forget to label all your axes correctly, including units.  :)
+
+What can you say about the confidence in your predictions, does it change across the predicted values? Why?
+
+
+## Credits
+
+Shiny app adapted from https://biostats-r.github.io/shinystats/
 
