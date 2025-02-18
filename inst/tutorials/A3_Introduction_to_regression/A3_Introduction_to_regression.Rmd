@@ -302,6 +302,14 @@ lm1 <- lm(Volume ~ Diameter, data = tree_data)
 
 ```
 
+
+```{r mod_objects, echo = FALSE}
+
+load("data/cherry_trees.rdata")
+lm1 <- lm(Volume ~ Diameter, data = tree_data)
+
+```
+
 Now let's have a look at the summary of the results. Run `summary()` with your regression output, `lm1`.
 
 ```{r regression_out, exercise = TRUE, exercise.setup = "regression1"}
@@ -568,7 +576,7 @@ predict(lm1, new_x)
 
 An important feature of the `predict()` function is that it can also calculate the confidence interval about our predicted values, or the standard error. You can do this with the `interval = "confidence"` or `se.fit = TRUE` arguments, respectively. The output of the confidence intervals is more convenient. Re-run the above code to predict those four values including the confidence intervals. 
 
-```{r pred_conf, exercise = TRUE}
+```{r pred_conf, exercise = TRUE, exercise.setup = "predict2"}
 
 
 
@@ -618,7 +626,7 @@ seq(1,10,2)
 
 We'll create a new data frame (as above when you created the `new_x`), but this time with a sequence of values for Diameter, from 3 to 9, in steps of 0.1. Run the code and add a line to view the first lines of the data frame:
 
-```{r make_data_range, exercise = TRUE}
+```{r make_data_range, exercise = TRUE, exercise.setup = "regression1"}
 predict_range <- data.frame(Diameter = seq(3,9,0.1))
 
 ```
@@ -640,7 +648,7 @@ head(predicted_values)
 
 For convenience, we'll add the fitted (predicted) values, the lower and upper confidence limits to the sequence of values. Note how we overwrite our original `predicted_values` object.
 
-```{r add_pred, exercise = TRUE}
+```{r add_pred, exercise = TRUE, exercise.setup = "predict_range"}
 
 predicted_values <- cbind(predict_range, predicted_values)
 
@@ -650,7 +658,7 @@ Finally, we can use the `predicted_values` data.frame to draw our plot. First th
 
 Run the code to see the plot. Can you add on some axis labels in the first `plot` function? Use `xlab = ""`, and `ylab = ""`. Put your labels inside the quotes.
 
-```{r final_plot, exercise = TRUE}
+```{r final_plot, exercise = TRUE, exercise.setup = "add_pred"}
 
 plot(Volume ~ Diameter, data = tree_data,
      xlim = c(3,9), ylim = c(0,2), pch = 16)
