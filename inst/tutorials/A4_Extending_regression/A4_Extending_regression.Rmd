@@ -8,5 +8,163 @@ runtime: shiny_prerendered
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
 
+# load bio data
+forest <- read.csv("./data/bio_index.csv")
+
 ```
+
+
+## Regression with more than one predictor
+
+Regression analysis with multiple predictors (or independent variables) follows the same analysis steps as before. One of the main differences is how you can visualise your analysis, both during the exploratory stage, as well as when presenting your results. With any more than two variables, it's difficult to visualise with a scatterplot.
+
+Another difference is in the output. You will see a coefficient, standard error and p-value for each predictor you include in the model. First, look at the overall result of the model, then at which of the individual predictors is significant.
+
+### Example workflow
+
+-1 *Ask your question*
+
+Our response variable (`bio_index`) is an index of forest biodiversity health (a continuous variable, measured through Earth Observation, with higher values representing better health). We are interested in which of three variables might potentially influence in forest health:   
+- `indicator_spp`: indicator species richness (species richness of a suite of 25 forest dependent species)  
+- `cover`: ground cover (percentage, measured through 5 x 5 m plots)  
+- `distance`: distance to nearest large (> 5 ha) forest patch (in km)    
+
+We will use a regression analysis to evaluate which of the above is a significant predictor of forest health. As always, we may have theories about the causal effects of the predictors, but without specific manipulative experiments, we can't draw firm conclusions on cause and effect.
+
+
+-2 *Check and explore your data*
+
+As always, check your data have imported correctly by using the `head()` and `str()` functions. Do this below, after running the code to import the data.
+
+```{r import_data, exercise = TRUE}
+
+forest <- read.csv("./data/bio_index.csv")
+
+
+```
+
+```{r import_data-hint-1}
+
+forest <- read.csv("./data/bio_index.csv")
+head(forest)
+str(forest)
+
+```
+
+Use the summary function on the whole data.frame to see the range and median values of your data. This is also a useful check on your data. Some data should be within certain values (e.g. percentages should be between 0 and 100).#
+
+```{r summary_check, exercise = TRUE}
+
+
+```
+
+```{r summary_check-solution}
+
+summary(forest)
+
+```
+
+As we have more than one predictor, we will use a pairs plot to visualise the relationships between all pair-wise combinations of our data. Conveniently, our data.frame only has numeric variables and we are interested in all of them. So we can simply put the data frame into the pairs() function. Try that here:
+
+```{r pairs_plot, exercise = TRUE}
+
+
+```
+
+```{r pairs_plot-solution, exercise.reveal_solution = TRUE}
+
+pairs(forest)
+
+```
+We are looking for two different kinds of relationships:   
+1. Relationships between the response and the predictors (look at just the first row)   
+2. Relationships between the predictor variables (everything not on first row or first column)  
+
+Relationships between the response and predictors will give us a clue about what results may show up in the model. In the case of relationships between predictors, we want to avoid including strongly correlated predictors within the model as this can have adverse effects on the model.
+
+You can always plot individual plots of pairs of variables using the plot() function, if you want to have a better look. Either look at the pairs plots, or make some individual plots and answer these questions:
+
+```{r quiz1}
+quiz(
+  question_checkbox("Which pair of variables does this plot represent ![](images/scatter1.png)",
+                    answer("biodiversity index", correct = TRUE),
+                    answer("indicator species", correct = TRUE),
+                    answer("ground cover"),
+                    answer("distance to large patch"),
+                    random_answer_order = TRUE,
+                    allow_retry = TRUE),
+  question_radio("What sign does the relationship in the above graphic have?",
+                 answer("Positive", correct = TRUE),
+                 answer("Negative"),
+                 message = "Look at the slope of the relationship ...",
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_radio("What sign would you expect a correlation coefficient to have?",
+                 answer("Positive", correct = TRUE),
+                 answer("Negative"),
+                 message = "Same as above!",
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE)
+)
+```
+
+Look at the other relationships and think about the above questions!
+
+
+-3 *Decide on your stats test*
+
+As we have a numeric response and we think that there might be a linear relationship between our variables and the response, we will use a multiple linear regression.
+
+
+-4 *Run the test*
+The code for a regression with multiple predictors is very similar to a regression with just one. We add the predictors to our *formula* argument:
+`bio_index ~ indicator_spp + cover + distance`. Then, we tell R where to find our data frame with the *data* argument: `data = forest`. Use these to complete the `lm()` function below. As before, we will assign the results of the regression to an object, for convenience.
+
+```{r lm_1, exercise = TRUE}
+
+myMod <- lm(bio_index )
+
+```
+
+```{r lm_1-solution, exercise.reveal_solution = TRUE}
+
+myMod <- lm(bio_index ~ indicator_spp + cover + distance, data = forest)
+
+```
+
+-5 *Interpret your results*
+As before, we'll use the summary() function to look at the results of our model. Put your model object, `myMod` into the function below:
+
+```{r mod_summmary, exercise = TRUE, exercise.setup = "lm_1"}
+
+```
+
+```{r mod_summary-hint-1}
+#summary(myMod)
+
+```
+
+You'll see that you have some extra results for each predictor. Before we look at those, let's check the significance of the overall model and check the assumptions by plotting the residuals. You can access the residuals by using this code: `myMod$residuals`. In case you were wondering, the `myMod` object is actually a list, and you access each element of the list, using the `$` operator and the name of the element `residuals`, just like accessing the `column` in a `data.frame`.
+
+```{r hist_resid, exercise = TRUE, exercise.setup = "lm_1"}
+
+```
+
+```{r hist_resid-hint-1}
+
+## use the histogram function!
+hist()
+
+```
+
+```{r hist_resid-solution, exercise.reveal_solution = TRUE}
+
+#hist(myMod$residuals)
+
+```
+
+
+-6 *Present your results*
+
+
 
