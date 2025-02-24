@@ -120,7 +120,13 @@ As we have a numeric response and we think that there might be a linear relation
 The code for a regression with multiple predictors is very similar to a regression with just one. We add the predictors to our *formula* argument:
 `bio_index ~ indicator_spp + cover + distance`. Then, we tell R where to find our data frame with the *data* argument: `data = forest`. Use these to complete the `lm()` function below. As before, we will assign the results of the regression to an object, for convenience.
 
-```{r lm_1, exercise = TRUE}
+```{r make_mod, exercise = TRUE, echo = FALSE}
+myMod <- lm(bio_index ~ indicator_spp + cover + distance, data = forest)
+
+```
+
+
+```{r lm_1, exercise = TRUE, exercise.setup = "make_mod"}
 
 myMod <- lm(bio_index )
 
@@ -135,18 +141,18 @@ myMod <- lm(bio_index ~ indicator_spp + cover + distance, data = forest)
 -5 *Interpret your results*
 As before, we'll use the summary() function to look at the results of our model. Put your model object, `myMod` into the function below:
 
-```{r mod_summmary, exercise = TRUE, exercise.setup = "lm_1"}
+```{r mod_summmary, exercise = TRUE, exercise.setup = "make_mod"}
 
 ```
 
 ```{r mod_summary-hint-1}
-#summary(myMod)
+summary(myMod)
 
 ```
 
 You'll see that you have some extra results for each predictor. Before we look at those, let's check the significance of the overall model and check the assumptions by plotting the residuals. You can access the residuals by using this code: `myMod$residuals`. In case you were wondering, the `myMod` object is actually a list, and you access each element of the list, using the `$` operator and the name of the element `residuals`, just like accessing the `column` in a `data.frame`.
 
-```{r hist_resid, exercise = TRUE, exercise.setup = "lm_1"}
+```{r hist_resid, exercise = TRUE, exercise.setup = "make_mod"}
 
 ```
 
@@ -159,12 +165,149 @@ hist()
 
 ```{r hist_resid-solution, exercise.reveal_solution = TRUE}
 
-#hist(myMod$residuals)
+hist(myMod$residuals)
+
+```
+
+You can also look at the default evaluation plots for the model by just plotting the model object (`myMod`).
+
+```{r plot_mod, exercise = TRUE, exercise.setup = "make_mod"}
+
+plot(myMod)
+
+```
+
+```{r comment1, eval = FALSE, echo = FALSE, include = FALSE}
+
+question("My Question",
+		answer(
+			htmltools::img(
+				src = "https://pkgs.rstudio.com/gradethis/reference/figures/logo.png"
+			), 
+			correct = TRUE
+		)
+	)
 
 ```
 
 
+```{r quiz2}
+quiz(
+  question_radio("Which of these plots matches your histogram of the residuals? ![](images/hist1.png)",
+                    answer("a"),
+                    answer("b"),
+                    answer("c"),
+                    answer("d", correct = TRUE),
+                    random_answer_order = FALSE,
+                    allow_retry = TRUE),
+  question_radio("What is your conclusion from the above histogram?",
+                 answer("Residuals are approximately normally distributed", correct = TRUE),
+                 answer("Residuals are not normal"),
+                 answer("I'm not sure"),
+                 message = "Does the histogram have an approximate 'bell curve' shape of the normal distribution?",
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_radio("Does the first residual plot show any strong patterns?",
+                 answer("No", correct = TRUE),
+                 answer("Yes"),
+                 message = "Does it approximate a starry sky??",
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE),
+  question_checkbox("Look back at the model output. Tick all of the statements below that are true",
+                 answer("Overall, the model is significant", correct = TRUE),
+                 answer("The p-value for the overall model is less than 0.05", correct = TRUE),
+                 answer("The full model showed a significant improvement over the Null model (F = 14.97~3,~ ~36~, p < 0.001", answer = TRUE))
+)
+```
+
+Now, having checked the model assumptions and looked at the overall fit, we can look at the significance of the individual predictors.
+
+```{r quiz3}
+quiz(
+  question_radio("Which of the predictors (or independent variables) is signficant? ",
+                 answer("Ground cover"),
+                 answer("Indicator species", correct = TRUE),
+                 answer("Distance to large patch", correct = TRUE),
+                 random_answer_order = FALSE,
+                 message = "Which predictors have a p-value of < 0.05?"
+                 allow_retry = TRUE)
+)
+
+```  
 -6 *Present your results*
 
+You could present your results with a table of the model results, showing the coefficient estimates, standard errors and p-values. You could also include a sentence with the overal p-value and the associated F statistic (as above in the quiz). Finally, you could present some partial plots or response plots, that show the response of an individual predictor (predicted values against predictor values) while all the other predictor values in the model are held at their mean value. We will look at this later.
+
+**Note -- extension** 
+Although you can tell from these results which predictors are significant, it's difficult to assess which predictor has a larger or smaller effect due to the predictors having different ranges (e.g. *cover* is 0 to 100, *distance* is just 0 to 5). To do this, you need to **scale** your predictor values before putting them into the model. You can do this with the `scale()` function. This converts your predictor value onto a scale of standard deviations about a mean of 0. The `scale` function subtracts the overall mean of your predictor from each value, and then divides it by the standard deviation. For example. A scaled predictor with a value of 0 would have the mean value of your preditor; a value of 1, would mean that your actual predictor value is 1 standard deviation above the mean. So for the distance variable, the mean value is `r round(mean(forest$distance),2)` km, and the standard deviation is `r  round(sd(forest$distance),2)` km. Therefore, a *scaled value* of 1 would translate to a real value (unscaled) of `r round(mean(forest$distance),2)` + `r round(sd(forest$distance),2)` = `r round(mean(forest$distance) + sd(forest$distance),2)`. A value of 2, would mean 2 standard deviations above the mean, or `r round(mean(forest$distance),2)` + 2 x `r round(sd(forest$distance),2)` = `r round(mean(forest$distance) + 2*sd(forest$distance),2)`. Negative values are in standard deviations below the mean.
+
+
+To scale in R, you can use the scale function:
+
+```{r scaling, exercise = TRUE}
+
+scale(forest$distance)
+
+```
+Look at the 10th value - it's almost 0. This means our 10th value in the `forest$distance` vector is close to the mean. Note that we can use the square brackets to filter our data. 
+
+```{r scaling2, exercise - TRUE}
+
+forest$distance[10]
+mean(forest$distance)
+
+```
+
+Look at the 12th value of the *scaled* `forest$distance` vector. It's value is almost -1. This means it's one standard deviation below the mean. Use R to calculate this value in the code box below.
+
+```{r scaling3, exercise = TRUE}
+
+
+
+```
+
+```{r scaling3-hint-1}
+
+# Use sd() to get the standard deviation... 
+sd(forest$distance) 
+
+```
+
+```{r scaling3-hint-2}
+# Use mean() to get the mean......
+
+
+```
+
+```{r scaling3-hint-3}
+
+# Now subtract the sd() from the mean().....
+
+
+```
+
+```{r scaling3-hint-3}
+
+# Now subtract the sd() from the mean().....
+mean(forest$distance) - sd(forest$distance)
+
+```
+
+Now check your answer with the *unscaled* value. Remember, it's the 12th value of the `forest$distance` vector.
+
+
+```{r scaling4, exercise = TRUE}
+forest$distance[12]
+mean(forest$distance) - sd(forest$distance)
+
+```
+
+
+
+## Your turn! 
+
+
+#### Extension exercise
+Use the forest data (download these from the KLE) and re-run the model from the tutorial, but this time use the scaled data. First, make a new data frame with the three predictor variables scaled (use the `scale` function!) and then follow the same code as above. Now re-run the same model as in the tutorial. Look carefully at the outputs of the two model summaries (with scaled and unscaled predictors). What parts of the summary are similar? What parts are different?
 
 
