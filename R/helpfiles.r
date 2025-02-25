@@ -39,6 +39,16 @@ NULL
 #' learnr::run_tutorial("A3_Introduction_to_regression", package = "keeleR")
 #' }
 NULL
+#' @name A4_Extending_regression
+#' @title  A4 Extending regression
+#' @description
+#' An introduction to using R for multiple linear regression and other families
+#' @keywords R
+#' @examples
+#' \dontrun{
+#' learnr::run_tutorial("A4_Extending_regression", package = "keeleR")
+#' }
+NULL
 #' @name M1_Intro_to_multivariate
 #' @title Intro to multivariate data in R
 #' @description

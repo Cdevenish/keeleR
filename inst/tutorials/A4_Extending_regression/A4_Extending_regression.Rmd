@@ -442,9 +442,21 @@ library(ggplot2)
 ggplot(lizard_data, aes(x = cover, y = obs))+
   geom_point()+
   geom_smooth(method = "glm", method.args = list(family = "binomial"), formula = y ~ x, se = TRUE)+
-  xlab("Ground")+
+  xlab("Ground cover")+
   ylab("Probability of presence")
 
 ```
 
 In the plot, you can see that the direction of the relationship is negative (our odds ratio for cover is < 1), so with higher ground cover, there is less probability of lizard presence.
+
+
+## Your turn! Logistic regression
+
+
+You have data on presence and absence of a beetle species, with two possible predictors, water content of soil and soil density. Run a logistic regression, as in the tutorial, to find out which, if any, of the predictors has a significant effect on the probability of beetle presence. 
+
+Download the `beetle_data.csv` from the KLE. 
+
+Remember to check over your data first, and finally, to present your results in a report format, with a table and a graphic.
+
+
