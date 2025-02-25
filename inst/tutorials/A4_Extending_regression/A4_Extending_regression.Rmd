@@ -379,7 +379,7 @@ summary(glm1)
 
 A useful function with binary data is `table()`. This will count how many observations we have in each category (presence / absence). Use just the column of observation `lizard_data$obs` inside the `table` function. Complete the code!
 
-```{r table_bin, exercise = TRUE}
+```{r table_bin, exercise = TRUE, , exercise.setup = "import_binary"}
 
 ```
 
@@ -390,12 +390,11 @@ table(lizard_data$obs)
 ```
 
 
-
 Notice that we don't have the same overall model fit statistics at the end of the output. We can recreate a type of "pseudo R^2^" by comparing the *explained deviance* to the *null deviance*. We can also test whether the model performance is improved with the predictors, or whether it is better without any predictors at all (a null model). This is essentially what is tested by the ANOVA test (F statistic) in the linear model.
 
 The code below gives us a p-value for the test of whether our model is better than the null model.
 
-```{r chi_test, exercise = TRUE}
+```{r chi_test, exercise = TRUE, exercise.setup = "binary_glm"}
 
 # get the chi-square statistic
 chisq <- glm1$null.deviance - glm1$deviance 
@@ -410,10 +409,10 @@ chisq_df <- glm1$df.null - glm1$df.residual
 
 As you can see, the p-value is < 0.05, so we can conclude that our model is better than the null model.
 
-The **pseudo R^2^**, as in the linear model, is how much variability in the data is explained by the model. The R^2^ is calculated as the explained deviance / null deviance:
+The **pseudo R^2^**, as in the linear model, is how much variability in the data is explained by the model. The deviance is a measure of the unexplained variance of the model. It is calculated from the difference between the observed and predicted values. If the model explains more variability than the null model, then you would expect the (residual) deviance to be less than the null deviance (check this on the model output). The explained deviance is the null deviance - the residual deviance. The R^2^ is then calculated as the $explained~deviance / null~deviance$:
 
 
-```{r r2_glm, exercise = TRUE}
+```{r r2_glm, exercise = TRUE, exercise.setup = "binary_glm"}
 
 # calculate the pseudo-R2
 (glm1$null.deviance - glm1$deviance) / glm1$null.deviance
@@ -423,7 +422,7 @@ The **pseudo R^2^**, as in the linear model, is how much variability in the data
 
 Then, we can look at the significance of each predictor (in a similar way to the linear model). However, the interpretation of the coefficients is different. First, we need to transform the coefficients to an 'odds ratio'. 
 
-```{r odds, exercise = TRUE}
+```{r odds, exercise = TRUE, exercise.setup = "binary_glm"}
 
 exp(glm1$coefficients)[2:3]
 
@@ -435,7 +434,7 @@ When the value of the odds ratio is below 1, the relationship between our respon
 We can also plot the results, one variable at a time. 
 
 
-```{r, ggplot_glm, exercise = TRUE}
+```{r, ggplot_glm, exercise = TRUE, exercise.setup = "import_binary"}
 
 library(ggplot2)
 
