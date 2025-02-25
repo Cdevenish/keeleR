@@ -64,7 +64,7 @@ summary(forest)
 
 ```
 
-As we have more than one predictor, we will use a pairs plot to visualise the relationships between all pair-wise combinations of our data. Conveniently, our data.frame only has numeric variables and we are interested in all of them. So we can simply put the data frame into the pairs() function. Try that here:
+As we have more than one predictor, we will use a pairs plot to visualise the relationships between all pair-wise combinations of our data. Conveniently, our data.frame only has numeric variables and we are interested in all of them. So we can simply put the data frame into the `pairs()` function. Try that here:
 
 ```{r pairs_plot, exercise = TRUE}
 
@@ -82,7 +82,7 @@ We are looking for two different kinds of relationships:
 
 Relationships between the response and predictors will give us a clue about what results may show up in the model. In the case of relationships between predictors, we want to avoid including strongly correlated predictors within the model as this can have adverse effects on the model.
 
-You can always plot individual plots of pairs of variables using the plot() function, if you want to have a better look. Either look at the pairs plots, or make some individual plots and answer these questions:
+You can always plot individual plots of pairs of variables using the `plot()` function, if you want to have a better look. Either look at the pairs plots, or make some individual plots and answer these questions:
 
 ```{r quiz1}
 quiz(
@@ -111,16 +111,15 @@ quiz(
 Look at the other relationships and think about the above questions!
 
 
--3 *Decide on your stats test*
-
+-3 *Decide on your stats test*  
 As we have a numeric response and we think that there might be a linear relationship between our variables and the response, we will use a multiple linear regression.
 
 
--4 *Run the test*
+-4 *Run the test*  
 The code for a regression with multiple predictors is very similar to a regression with just one. We add the predictors to our *formula* argument:
 `bio_index ~ indicator_spp + cover + distance`. Then, we tell R where to find our data frame with the *data* argument: `data = forest`. Use these to complete the `lm()` function below. As before, we will assign the results of the regression to an object, for convenience.
 
-```{r make_mod, exercise = TRUE, echo = FALSE}
+```{r make_mod, echo = FALSE}
 myMod <- lm(bio_index ~ indicator_spp + cover + distance, data = forest)
 
 ```
@@ -138,10 +137,10 @@ myMod <- lm(bio_index ~ indicator_spp + cover + distance, data = forest)
 
 ```
 
--5 *Interpret your results*
-As before, we'll use the summary() function to look at the results of our model. Put your model object, `myMod` into the function below:
+-5 *Interpret your results*  
+As before, we'll use the `summary()` function to look at the results of our model. Put your model object, `myMod` into the function below:
 
-```{r mod_summmary, exercise = TRUE, exercise.setup = "make_mod"}
+```{r mod_summary, exercise = TRUE, exercise.setup = "make_mod"}
 
 ```
 
@@ -191,7 +190,7 @@ question("My Question",
 ```
 
 
-```{r quiz2}
+```{r quiz2, fig.width = 2}
 quiz(
   question_radio("Which of these plots matches your histogram of the residuals? ![](images/hist1.png)",
                     answer("a"),
@@ -204,19 +203,20 @@ quiz(
                  answer("Residuals are approximately normally distributed", correct = TRUE),
                  answer("Residuals are not normal"),
                  answer("I'm not sure"),
-                 message = "Does the histogram have an approximate 'bell curve' shape of the normal distribution?",
+                 try_again = "Does the histogram have an approximate 'bell curve' shape of the normal distribution?",
                  random_answer_order = TRUE,
                  allow_retry = TRUE),
   question_radio("Does the first residual plot show any strong patterns?",
                  answer("No", correct = TRUE),
                  answer("Yes"),
-                 message = "Does it approximate a starry sky??",
+                 try_again = "Does it approximate a starry sky??",
                  random_answer_order = TRUE,
                  allow_retry = TRUE),
   question_checkbox("Look back at the model output. Tick all of the statements below that are true",
                  answer("Overall, the model is significant", correct = TRUE),
                  answer("The p-value for the overall model is less than 0.05", correct = TRUE),
-                 answer("The full model showed a significant improvement over the Null model (F = 14.97~3,~ ~36~, p < 0.001", answer = TRUE))
+                 answer("The full model showed a significant improvement over the Null model (F = 14.97~3,36~, p < 0.001", 
+                        correct = TRUE))
 )
 ```
 
@@ -229,7 +229,7 @@ quiz(
                  answer("Indicator species", correct = TRUE),
                  answer("Distance to large patch", correct = TRUE),
                  random_answer_order = FALSE,
-                 message = "Which predictors have a p-value of < 0.05?"
+                 try_again = "Which predictors have a p-value of < 0.05?",
                  allow_retry = TRUE)
 )
 
@@ -239,7 +239,11 @@ quiz(
 You could present your results with a table of the model results, showing the coefficient estimates, standard errors and p-values. You could also include a sentence with the overal p-value and the associated F statistic (as above in the quiz). Finally, you could present some partial plots or response plots, that show the response of an individual predictor (predicted values against predictor values) while all the other predictor values in the model are held at their mean value. We will look at this later.
 
 **Note -- extension** 
-Although you can tell from these results which predictors are significant, it's difficult to assess which predictor has a larger or smaller effect due to the predictors having different ranges (e.g. *cover* is 0 to 100, *distance* is just 0 to 5). To do this, you need to **scale** your predictor values before putting them into the model. You can do this with the `scale()` function. This converts your predictor value onto a scale of standard deviations about a mean of 0. The `scale` function subtracts the overall mean of your predictor from each value, and then divides it by the standard deviation. For example. A scaled predictor with a value of 0 would have the mean value of your preditor; a value of 1, would mean that your actual predictor value is 1 standard deviation above the mean. So for the distance variable, the mean value is `r round(mean(forest$distance),2)` km, and the standard deviation is `r  round(sd(forest$distance),2)` km. Therefore, a *scaled value* of 1 would translate to a real value (unscaled) of `r round(mean(forest$distance),2)` + `r round(sd(forest$distance),2)` = `r round(mean(forest$distance) + sd(forest$distance),2)`. A value of 2, would mean 2 standard deviations above the mean, or `r round(mean(forest$distance),2)` + 2 x `r round(sd(forest$distance),2)` = `r round(mean(forest$distance) + 2*sd(forest$distance),2)`. Negative values are in standard deviations below the mean.
+Although you can tell from these results which predictors are significant, it's difficult to assess which predictor has a larger or smaller effect due to the predictors having different ranges (e.g. *cover* ranges from 0 to 100, *distance* is just 0 to 5). To compare coefficient sizes, you need to **scale** your predictor values before putting them into the model. You can do this with the `scale()` function. This converts your predictor value onto a scale of standard deviations about a mean of 0. The `scale` function subtracts the overall mean of your predictor from each value, and then divides it by the standard deviation. For example,  
+- a scaled predictor with a value of 0 would have the mean value of your predictor   
+- a value of 1 would mean that your actual predictor value is 1 standard deviation above the mean  
+
+So for the distance variable, the mean value is `r round(mean(forest$distance),2)` km, and the standard deviation is `r  round(sd(forest$distance),2)` km. Therefore, a *scaled value* of 1 would translate to a real value (unscaled) of `r round(mean(forest$distance),2)` + `r round(sd(forest$distance),2)` = `r round(mean(forest$distance) + sd(forest$distance),2)`. A value of 2, would mean 2 standard deviations above the mean, or `r round(mean(forest$distance),2)` + (2 x `r round(sd(forest$distance),2)`) = `r round(mean(forest$distance) + 2*sd(forest$distance),2)`. Negative values are in standard deviations below the mean.
 
 
 To scale in R, you can use the scale function:
@@ -249,7 +253,7 @@ To scale in R, you can use the scale function:
 scale(forest$distance)
 
 ```
-Look at the 10th value - it's almost 0. This means our 10th value in the `forest$distance` vector is close to the mean. Note that we can use the square brackets to filter our data. 
+Look at the 10th value - it's almost 0. This means our 10th value in the `forest$distance` vector is close to the mean. Note that we can use the square brackets to show just a single value. 
 
 ```{r scaling2, exercise - TRUE}
 
@@ -286,7 +290,7 @@ sd(forest$distance)
 
 ```
 
-```{r scaling3-hint-3}
+```{r scaling3-hint-4}
 
 # Now subtract the sd() from the mean().....
 mean(forest$distance) - sd(forest$distance)
@@ -311,3 +315,136 @@ mean(forest$distance) - sd(forest$distance)
 Use the forest data (download these from the KLE) and re-run the model from the tutorial, but this time use the scaled data. First, make a new data frame with the three predictor variables scaled (use the `scale` function!) and then follow the same code as above. Now re-run the same model as in the tutorial. Look carefully at the outputs of the two model summaries (with scaled and unscaled predictors). What parts of the summary are similar? What parts are different?
 
 
+## Regression with a binary response - logistic regression
+
+Regression analyses can also be implemented with binary or count response variables. Here we will begin with binary (e.g. presence or absence data) as the response. With binary (or logistic) regression, instead of predicting the value of our response, we are predicting the probability of an outcome, so in this case, the probability of species presence given known values of our predictors.  
+
+We have a study looking at factors influencing presence of a lizard species: mean annual temperature and percentage cover of vegetation (from 10 m diameter vegetation plots). So with this analysis, we could ask which predictors are significant predictors of lizard presence, or which could ask what is the probability of a lizard occurring in a habitat with certain values of our predictors.
+
+The interpretation of the results is similar to linear regression, although the regression equation is different. In this tutorial we will focus primarily on interpreting the results.
+
+
+As always, we can start by loading the data and doing some data exploration.
+
+```{r import_binary, exercise = TRUE}
+
+lizard_data <- read.csv("data/lizard_data.csv")
+
+```
+
+Explore the data here, use functions such as `head()`, `summary()`, and `pairs()`. You will see that the response has just two values (0, 1). However, you might still be able to discern some relationships with the predictors. Have a look!
+
+```{r explore1, exercise = TRUE, exercise.setup = "import_binary"}
+
+```
+
+```{r explore1-solution}
+
+## check first values and data types
+head(lizard_data)
+str(lizard_data)
+
+# Check range of values, presence of NAs
+summary(lizard_data)
+
+# Check relationships and correlations between variables
+pairs(lizard_data)
+
+```
+
+Are any of the predictors correlated? Do you expect any relationships to show up in the regression analysis?
+
+For regression analysis beyond linear regression, we will use the `glm` function. Here we can add a `family` argument depending on the type of the response. For binary data, we will use `family = binomial`. Otherwise, the function works in the same way as `lm()`.
+
+Run the code to perform the binary regression.
+
+```{r binary_glm, exercise = TRUE, exercise.setup = "import_binary"}
+
+glm1 <- glm(obs ~ temp + cover, family = binomial, data = lizard_data)
+
+```
+
+As before, we can use the `summary()` function with the model object (`glm1`) to look at the results. Complete the code to see the summary. You will see that they are slightly different to the `lm` results.
+
+```{r glm_summary, exercise = TRUE, exercise.setup = "binary_glm"}
+
+
+```
+
+```{r glm_summary-solution, exercise.reveal_solution = TRUE}
+
+summary(glm1)
+
+```
+
+A useful function with binary data is `table()`. This will count how many observations we have in each category (presence / absence). Use just the column of observation `lizard_data$obs` inside the `table` function. Complete the code!
+
+```{r table_bin, exercise = TRUE}
+
+```
+
+```{r table_bin-solution, exercise.reveal_solution = TRUE}
+
+table(lizard_data$obs)
+
+```
+
+
+
+Notice that we don't have the same overall model fit statistics at the end of the output. We can recreate a type of "pseudo R^2^" by comparing the *explained deviance* to the *null deviance*. We can also test whether the model performance is improved with the predictors, or whether it is better without any predictors at all (a null model). This is essentially what is tested by the ANOVA test (F statistic) in the linear model.
+
+The code below gives us a p-value for the test of whether our model is better than the null model.
+
+```{r chi_test, exercise = TRUE}
+
+# get the chi-square statistic
+chisq <- glm1$null.deviance - glm1$deviance 
+
+# get the degrees of freedom for the test
+chisq_df <- glm1$df.null - glm1$df.residual 
+
+# get the p-value for the test
+1 - pchisq(chisq, chisq_df) 
+
+```
+
+As you can see, the p-value is < 0.05, so we can conclude that our model is better than the null model.
+
+The **pseudo R^2^**, as in the linear model, is how much variability in the data is explained by the model. The R^2^ is calculated as the explained deviance / null deviance:
+
+
+```{r r2_glm, exercise = TRUE}
+
+# calculate the pseudo-R2
+(glm1$null.deviance - glm1$deviance) / glm1$null.deviance
+
+```
+
+
+Then, we can look at the significance of each predictor (in a similar way to the linear model). However, the interpretation of the coefficients is different. First, we need to transform the coefficients to an 'odds ratio'. 
+
+```{r odds, exercise = TRUE}
+
+exp(glm1$coefficients)[2:3]
+
+```
+
+When the value of the odds ratio is below 1, the relationship between our response and the predictor is **negative**. When the odds ratio is greater than 1, then the relationship between the response and the predictor is **positive**. 
+
+
+We can also plot the results, one variable at a time. 
+
+
+```{r, ggplot_glm, exercise = TRUE}
+
+library(ggplot2)
+
+ggplot(lizard_data, aes(x = cover, y = obs))+
+  geom_point()+
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), formula = y ~ x, se = TRUE)+
+  xlab("Ground")+
+  ylab("Probability of presence")
+
+```
+
+In the plot, you can see that the direction of the relationship is negative (our odds ratio for cover is < 1), so with higher ground cover, there is less probability of lizard presence.
