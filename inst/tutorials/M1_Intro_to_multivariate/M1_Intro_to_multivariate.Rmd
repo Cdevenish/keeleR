@@ -194,7 +194,7 @@ colSums(varespec_pa)
 
 Ordination is a technique often used to visualise multivariate data. We can look for groupings (sites that are similar to each other) and also overlay other variables, e.g. environmental variables in an attempt to look at what may be behind differences between groups of sites.
 
-Here we are looking at a data set of 25 species of Oribatid mites collected over 70 sampling sites in an area 2.5 m x 10 m in size. There are also five environmental variables with data for each site, either numeric (substrate density, water content) or categorical (substrate type, three classes of shrub density, microtopography type).
+Here we are looking at a data set of 35 species of Oribatid mites collected over 70 sampling sites in an area 2.5 m x 10 m in size. There are also five environmental variables with data for each site, either numeric (substrate density, water content) or categorical (substrate type, three classes of shrub density, microtopography type).
 
 The data is included in the `vegan` package and you can read about it on the help page in R `?mite`
 
@@ -238,12 +238,12 @@ levels(mite.env$Topo)
 ```
 
 Now we can use this factor with the `col` argument in the `points` function to colour our sites by microtopography type. 
-When we plot ordinations in the `vegan` package, we can build the plot up using the `ordiplot` function to plot the axes, then `points`, and then add either ellipses or other environmental variables.
+When we plot ordinations in the `vegan` package, we can build up the plot in 'layers' using the `ordiplot` function to plot the axes, then `points` or `text`, and then add either ellipses or other environmental variables. We need to assign the `ordiplot` output to an object (called `plt` here), so that we can use it as the first argument in the subsequent functions to build up the plot. 
 
 ```{r miteGroups2, exercise = TRUE, exercise.setup = "nmds1"}
 
-ordiplot(nmds, type = "n")
-points(nmds, "sites", pch = 16, col = mite.env$Topo)
+plt <- ordiplot(nmds, type = "n")
+points(plt, "sites", pch = 16, col = mite.env$Topo)
 
 ```
 
@@ -257,11 +257,11 @@ Another way of using groups is to draw ellipses, polygons or hulls around points
 ```{r miteGroups3, exercise = TRUE, exercise.setup = "nmds1"}
 
 # we start the plot with the same two lines as above, but without colours on the points:
-ordiplot(nmds, type = "n")
-points(nmds, "sites", pch = 16)
+plt <- ordiplot(nmds, type = "n")
+points(plt, "sites", pch = 16)
 
 ## Now we can add ellipses around the points belonging to each shrub grouping:
-ordiellipse(nmds, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
+ordiellipse(plt, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
 
 ```
 
@@ -270,13 +270,13 @@ Let's add a legend to the plot to help interpret the colours.
 ```{r miteGroups4, exercise = TRUE, exercise.setup = "nmds1"}
 
 # we start the plot with the same two lines as above, but without colours on the points:
-ordiplot(nmds, type = "n")
-points(nmds, "sites", pch = 16)
+plt <- ordiplot(nmds, type = "n")
+points(plt, "sites", pch = 16)
 
 ## Now we can add ellipses around the points belonging to each shrub grouping:
-ordiellipse(nmds, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
+ordiellipse(plt, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
 
-legend("bottomleft", legend = levels(mite.env$Shrub), pch = 16, col = 1:3, bty = "n")
+legend("bottomleft", legend = levels(mite.env$Shrub), pch = 21, col = 1:3, bty = "n")
 
 ```
 
@@ -297,16 +297,16 @@ This analysis allows us to plot arrows for numeric environmental vectors and cen
 
 ```{r envFit2, exercise = TRUE, exercise.setup = "envFit1"}
 
-ordiplot(nmds, type = "none")
-points(nmds, "sites", pch = 16, col= mite.env$Topo)
+plt <- ordiplot(nmds, type = "none")
+points(plt, "sites", pch = 16, col= mite.env$Topo)
 plot(fit, p.max = 0.05)
 
 ```
 
-The direction of the arrow points in the direction of increasing values of the variable. The length is proportional to the strength of the relationship. In this example, it seems that "Blanket" sites have greater water content than "Hummock" sites and that the NMDS2 axes could be interpreted as decreasing substrate density. If arrows from environmental variables point in the same direction, then those variables are correlated. 
+The direction of the arrow points in the direction of increasing values of the variable. The length is proportional to the strength of the relationship. In this example, it seems that "Blanket" sites have greater water content than "Hummock" sites and that the NMDS2 axes could be interpreted as decreasing substrate density. If arrows from environmental variables point in the same direction, then those variables are correlated (or potentially redundant). 
 
 
-It also evaluates the statistical significance of the fit of the environmental variables to the ordination axes. The plot function allows for only significantly fitted variables to be plotted. The p-values for each factor or numeric variable can be seen when printing the `fit` object in the column headed `Pr(>r)`.
+The `envfit()` function also evaluates the statistical significance of the fit of the environmental variables to the ordination axes. The plot function allows for only significantly fitted variables to be plotted. The p-values for each factor or numeric variable can be seen when printing the `fit` object in the column headed `Pr(>r)`.
 
 Here we refit all the environmental variables:
 
@@ -315,3 +315,50 @@ Here we refit all the environmental variables:
 fit <- envfit(nmds, mite.env)
 fit
 ```
+
+
+#### Adding species arrows
+
+So far, we have just plotted the 'sites' as points on the ordination. It is also possible to plot the 'species', either as arrows, or points (centroids). If we have some species of interest, or not too many in total, then it can be useful to plot species arrows that can help interpret which species are associated with environmental variables or which species are associated with certain "treatment" conditions. You can use the `select` argument inside the function to plot just certain species. Here we have plotted the five most prevalent species (how could you work that out.. ?). As you can see, these plots can soon get messy, with lots of overlapping labels.
+
+
+```{r species_arrows, exercise = TRUE, exercise.setup = "nmds1"}
+
+plt <- ordiplot(nmds, type = "n")
+points(plt, "sites", pch = 16, col= mite.env$Topo)
+
+## Add species arrows, using the text function.
+text(plt, "species", arrows = TRUE, 
+     select = c("LCIL", "Brachy", "ONOV", "HPAV", "SUCT", "ONOV", "HPAV"), 
+     col = "blue") 
+
+```
+
+
+## 4. Your turn!
+
+
+### A 
+
+### B peat bog condition
+
+Download the 'peat_condition.csv' data set from the KLE. In this single file, you have just environmental variables. Ordination can also be used to look at redundancy in variables (e.g. it might save you from collecting unnecessary field data) or at how environmental variables relate to certain "treatment" conditions.
+
+In this example, we have an expert evaluation of the condition of the peat bog (`Expert_Class`), with categories as either *Natural*, *Impacted* or *Degraded*. There is also topographic information (`Location`) as either *Ridge* or *Plateau*. 
+The other variables are all numeric and represent an index of quadrat cover for the following characteristics of the peat:   
+- Drain (free drainage - is there water movement?)  
+- Browsing (degree of visible browsing pressure)  
+- Damaged_Ground  
+- Erosion  
+- Sphagnum_Damage   
+
+Follow these steps:  
+1 Create an ordination using just the numeric variables (i.e. if you bring your data set in as `peat`, then `peat[,4:9]` will subset just columns 4 to 9, which are the numeric variables).     
+2 Colour the points by either `Expert_Class` or `Location`.  
+3 Draw arrows for each environmental variable (hint: use "species" in the `text` function. Think about the organisation of your data, rather than a site by species, table, you have a site by environmental variable table in the ordination.  
+
+Now answer these two questions:
+
+1 Do the environmental variables group sites by peat bog condition or topographic position?
+2. Are there any redundant environmental variables? Would it be possible to collect one or two less during the field surveys?
+
