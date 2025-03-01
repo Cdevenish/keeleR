@@ -198,7 +198,9 @@ Here we are looking at a data set of 35 species of Oribatid mites collected over
 
 The data is included in the `vegan` package and you can read about it on the help page in R `?mite`
 
-Lool at how the function is used below. We put our data set (as a matrix of species occurrences) first, then some settings. The most important are how many axes we want (`k`) and what distance metric we want to use (`distance`).
+#### Create the ordination
+
+We use the `metaMDS()` function from the `vegan` package for the NMDS ordination. Look at how the function is used below. We put our data set (as a matrix of species occurrences) first, then some settings. The most important are how many axes we want (`k`) and what distance metric we want to use (`distance`).
 
 ```{r nmds1, exercise = TRUE}
 
@@ -216,6 +218,8 @@ The key information from the nmds result is that a solution was reached (multipl
   - > 0.20 use with care  
   - > 0.35 poor   
 
+#### Plotting your results  
+Ordination is primarily a technique for visualising data by reducing its dimensions. Here we have gone from 35 columns (species) to 2 ordination axes - this allows us to plot all the species on a single plot - and may show us some patterns in their community composition.  
 
 A simple plot of the ordination (remember we only asked for two axes)
 
@@ -226,8 +230,9 @@ plot(nmds, display = "sites")
 
 Sites that are closer together are more similar to each other in terms of species composition.
 
-It can help to interpret the data if we colour the points, add ellipses or add centroids according to groupings contained in the data. For example, the mite data has groups for shrub type and topography. We can use these to colour the points.
+#### Adding environmental variables
 
+It can help to interpret the data if we colour the points, add ellipses or add centroids according to groupings contained in the data. For example, the mite data has groups for shrub type and topography. We can use these to colour the points.
 
 Here we will colour the points by the different levels in the microtopography. These are "Blanket" or "Hummock". You can check this with the `levels` function - if the variable is a `factor`.
 
@@ -252,13 +257,13 @@ Black points are at "Blanket" sites, whereas red points are at "Hummock" sites.
 Remember that the ordination we performed above only used the information from the counts of each species at the 70 sites. Is there a pattern in the species communities found at "Blanket" or "Hummock" habitats?
 
 
-Another way of using groups is to draw ellipses, polygons or hulls around points belonging to the same group. Here we will use the three levels of shrub density (None, Few, Many) to draw ellipses around the points belonging to these categories.
+Another way of using groups is to draw ellipses, polygons or hulls around points belonging to the same group. Here we will use the three levels of shrub density (None, Few, Many) to draw ellipses around the points belonging to these categories. We can also colour the points by shrub density. 
 
 ```{r miteGroups3, exercise = TRUE, exercise.setup = "nmds1"}
 
 # we start the plot with the same two lines as above, but without colours on the points:
 plt <- ordiplot(nmds, type = "n")
-points(plt, "sites", pch = 16)
+points(plt, "sites", pch = 16, col = mite.env$Shrub)
 
 ## Now we can add ellipses around the points belonging to each shrub grouping:
 ordiellipse(plt, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
@@ -271,12 +276,26 @@ Let's add a legend to the plot to help interpret the colours.
 
 # we start the plot with the same two lines as above, but without colours on the points:
 plt <- ordiplot(nmds, type = "n")
-points(plt, "sites", pch = 16)
+points(plt, "sites", pch = 16, col = mite.env$Shrub)
 
 ## Now we can add ellipses around the points belonging to each shrub grouping:
 ordiellipse(plt, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
 
 legend("bottomleft", legend = levels(mite.env$Shrub), pch = 21, col = 1:3, bty = "n")
+
+```
+
+```{r quiz1}
+
+quiz(question_checkbox("Which shrub categories seem to have the most dissimilar communities of mites?",
+                       answer(c("None", "Few"), correct = TRUE,
+                       answer("Many"),
+                       answer(c("None", "Many")),
+                       answer(c("Few", "Many")),
+                       answer("None"))
+     )
+)
+
 
 ```
 
@@ -338,9 +357,21 @@ text(plt, "species", arrows = TRUE,
 ## 4. Your turn!
 
 
-### A 
+#### A Woodland invertebrates
 
-### B peat bog condition
+You have collected data from sticky traps in a UK woodland. At each sample site you also measured pH, Leaf litter (proportion cover), Understorey (index from 0 to 1), canopy height (m) and a qualitative habitat type (woodland or open scrub).
+
+Download the `spp_data.csv` and `env_data.csv` from the KLE. These contain the site by species matrix, and the environmental variables, respectively.
+
+Using the tutorial to guide you, first summarise the data. How many species are there? How many sites? What is the species richness per site? What is the mean species richness? Which species are the most common, which are the rarest?  
+
+Now, create an ordination with the species data. Plot the result and colour the points by habitat type. Is any pattern visible? What does this imply? Don't forget to load the `vegan` package!
+
+Use the `envfit` function to relate just the numeric environmental variables to the ordination. Now plot them and also look at their significance. How can you interpret what you see?
+
+
+
+#### B peat bog condition
 
 Download the 'peat_condition.csv' data set from the KLE. In this single file, you have just environmental variables. Ordination can also be used to look at redundancy in variables (e.g. it might save you from collecting unnecessary field data) or at how environmental variables relate to certain "treatment" conditions.
 
@@ -359,6 +390,6 @@ Follow these steps:
 
 Now answer these two questions:
 
-1 Do the environmental variables group sites by peat bog condition or topographic position?
+1 Do the environmental variables group sites by peat bog condition or topographic position?  
 2. Are there any redundant environmental variables? Would it be possible to collect one or two less during the field surveys?
 
