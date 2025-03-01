@@ -224,7 +224,7 @@ Now, having checked the model assumptions and looked at the overall fit, we can 
 
 ```{r quiz3}
 quiz(
-  question_radio("Which of the predictors (or independent variables) is signficant? ",
+  question_checkbox("Which of the predictors (or independent variables) is signficant? ",
                  answer("Ground cover"),
                  answer("Indicator species", correct = TRUE),
                  answer("Distance to large patch", correct = TRUE),
