@@ -228,7 +228,7 @@ plot(nmds, display = "sites")
 
 ```
 
-Sites that are closer together are more similar to each other in terms of species composition.
+**Sites that are closer together are more similar to each other in terms of species composition.**
 
 #### Adding environmental variables
 
@@ -281,7 +281,7 @@ points(plt, "sites", pch = 16, col = mite.env$Shrub)
 ## Now we can add ellipses around the points belonging to each shrub grouping:
 ordiellipse(plt, groups = mite.env$Shrub, col = 1:nlevels(mite.env$Shrub), lwd = 2)
 
-legend("bottomleft", legend = levels(mite.env$Shrub), pch = 21, col = 1:3, bty = "n")
+legend("bottomleft", legend = levels(mite.env$Shrub), pch = 16, col = 1:3, bty = "n")
 
 ```
 
@@ -291,8 +291,7 @@ quiz(question_checkbox("Which shrub categories seem to have the most dissimilar 
                        answer("None, Few"),
                        answer("None, Many", correct = TRUE),
                        answer("Few, Many"),
-                       answer("None"),
-                       answer("Many"),
+                       answer("Few"),
                        try_again = "Remember - the more dissimilar, the further apart the sites will be",
                        allow_retry = TRUE,
                        random_answer_order = TRUE
@@ -339,7 +338,7 @@ quiz(
   question_radio("As values increase on the NMDS2 axis, would you expect higher or lower values of substrate density (look at the arrow on the plot above)?",
                        answer("Higher"),
                        answer("Lower", correct = TRUE),
-                       try_again = "The 'Subsdens' arrow points downwards - look at the scale on the NMDS2 axis - does this increase or decrease in the downwards direction?",
+                       try_again = "The 'SubsDens' arrow points downwards - look at the scale on the NMDS2 axis - does this increase or decrease in the downwards direction?",
                        allow_retry = TRUE,
                        random_answer_order = TRUE
                        ),
@@ -379,8 +378,6 @@ quiz(question_checkbox("Which environmental variables have significant relations
 ```
 
 
-
-
 #### Adding species arrows
 
 So far, we have just plotted the 'sites' as points on the ordination. It is also possible to plot the 'species', either as arrows, or points (centroids). If we have some species of interest, or not too many in total, then it can be useful to plot species arrows that can help interpret which species are associated with environmental variables or which species are associated with certain "treatment" conditions. You can use the `select` argument inside the function to plot just certain species. Here we have plotted the five most prevalent species (how could you work that out.. ?). As you can see, these plots can soon get messy, with lots of overlapping labels.
@@ -402,7 +399,7 @@ text(plt, "species", arrows = TRUE,
 ## 4. Your turn!
 
 
-#### A Woodland invertebrates
+#### **A Woodland invertebrates**
 
 You have collected data from sticky traps in a UK woodland. At each sample site you also measured pH, Leaf litter (proportion cover), Understorey (index from 0 to 1), canopy height (m) and a qualitative habitat type (woodland or open scrub).
 
@@ -416,7 +413,7 @@ Use the `envfit` function to relate just the numeric environmental variables to 
 
 
 
-#### B peat bog condition
+#### **B peat bog condition**
 
 Download the 'peat_condition.csv' data set from the KLE. In this single file, you have just environmental variables. Ordination can also be used to look at redundancy in variables (e.g. it might save you from collecting unnecessary field data) or at how environmental variables relate to certain "treatment" conditions.
 
@@ -438,3 +435,4 @@ Now answer these two questions:
 1 Do the environmental variables group sites by peat bog condition or topographic position?  
 2. Are there any redundant environmental variables? Would it be possible to collect one or two less during the field surveys?
 
+Thanks to Pete Lawrence's post-doc for these data!
