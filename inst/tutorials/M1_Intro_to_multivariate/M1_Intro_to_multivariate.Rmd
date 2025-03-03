@@ -10,13 +10,19 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(vegan)
 data(dune); data(dune.env)
-data(sipoo)
-data(varechem); data(varespec)
+row.names(dune) <- sprintf("site%02d", 1:nrow(dune))
+row.names(dune.env) <- sprintf("site%02d", 1:nrow(dune.env))
+
 data(mite); data(mite.env)
+row.names(mite) <- sprintf("site%02d", 1:nrow(mite))
+row.names(mite.env) <- sprintf("site%02d", 1:nrow(mite.env))
 
 data(BCI); data(BCI.env)
 BCI_trees <- BCI[1:25, 1:40]
 BCI_env <- BCI.env[1:25,]
+row.names(BCI_trees) <- sprintf("site%02d", 1:nrow(BCI_trees))
+row.names(BCI_env) <- sprintf("site%02d", 1:nrow(BCI_env))
+
 dune.pa <- data.frame((dune[1:15, 1:10]>1)*1)
 row.names(dune.pa) <- sprintf("site%02d", 1:nrow(dune.pa))
 dune.env <- dune.env[1:15, ]
@@ -134,7 +140,7 @@ Calculate the species richness by site for the `bci_trees_pa` data set and then 
 rowSums(BCI_trees_pa)
 ```
 
-```{r sipoo_Q1, echo = FALSE}
+```{r BCI_trees_Q1, echo = FALSE}
 
 quiz(caption = "Quiz 1",
   question_numeric("How many species of trees are there in plot 14?",
