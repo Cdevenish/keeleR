@@ -20,8 +20,8 @@ row.names(mite.env) <- sprintf("site%02d", 1:nrow(mite.env))
 data(BCI); data(BCI.env)
 BCI_trees <- BCI[1:25, 1:40]
 BCI_env <- BCI.env[1:25,]
-row.names(BCI_trees) <- sprintf("site%02d", 1:nrow(BCI_trees))
-row.names(BCI_env) <- sprintf("site%02d", 1:nrow(BCI_env))
+row.names(BCI_trees) <- sprintf("plot%02d", 1:nrow(BCI_trees))
+row.names(BCI_env) <- sprintf("plot%02d", 1:nrow(BCI_env))
 
 dune.pa <- data.frame((dune[1:15, 1:10]>1)*1)
 row.names(dune.pa) <- sprintf("site%02d", 1:nrow(dune.pa))
