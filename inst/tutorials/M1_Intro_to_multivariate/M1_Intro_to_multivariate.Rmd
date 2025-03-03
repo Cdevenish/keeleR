@@ -27,7 +27,9 @@ dune.pa <- data.frame((dune[1:15, 1:10]>1)*1)
 row.names(dune.pa) <- sprintf("site%02d", 1:nrow(dune.pa))
 dune.env <- dune.env[1:15, ]
 
+data(varespec)
 varespec_pa <- (varespec >0)*1
+row.names(varespec_pa) <- sprintf("site%02d", 1:nrow(varespec_pa))
 
 mite.env <- mite.env[,c("SubsDens", "WatrCont", "Shrub", "Topo")]
 
