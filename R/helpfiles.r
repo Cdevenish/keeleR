@@ -59,3 +59,13 @@ NULL
 #' learnr::run_tutorial("M1_Intro_to_multivariate", package = "keeleR")
 #' }
 NULL
+#' @name SDM1_Species_Distribution_Models
+#' @title Species distribution models in R
+#' @description
+#' A brief intro to species distribution models in R, for intro to model evaluation
+#' @keywords species distribution models, sdm
+#' @examples
+#' \dontrun{
+#' learnr::run_tutorial("SDM1_Species_Distribution_Models", package = "keeleR")
+#' }
+NULL

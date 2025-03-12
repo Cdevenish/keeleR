@@ -1,0 +1,336 @@
+---
+title: "Species Distribution Models in R"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(predicts)
+library(terra)
+library(sf)
+library(rJava)
+
+```
+
+
+## 1. Introduction to Species Distribution Modelling in R
+
+This tutorial provides a brief overview to using the R `predicts` package (called `dismo` in a former version) to run a species distribution model. There are many other newer alternative packages (e.g. `biomod2`, `sjSDM`) but `predicts` is very good for a introduction to the subject and has very good documentation and tutorials online (e.g. here).
+
+The focus will be on evaluation methods, but first, we need to make a model.
+
+We will use the data that we have already used in class, occurrence records of the Cinereous Finch from the dry forests of northwest Peru, and environmental covariates from [worldclim.](https://www.worldclim.org/data/index.html)
+
+** You have two options to run this tutorial. Either start a new project in a new instance of RStudio (with the usual folder structure) and dowload the data from the KLE and place in the corresponding folders -- OR -- follow the tutorial (as before) by using the code boxes below. Up to you! **
+
+#### **Species data** 
+
+As always, we need to load the data into R. The Cinereous Finch data is in a `.csv` file. Have a look at the data with `head()` and `str()` before you continue. 
+
+```{r load_data, exercise = TRUE}
+
+spp <- read.csv("data/cinereous_finch_data.csv")
+
+```
+
+
+Let's plot the points and have a quick look. Remember to check your occurrence points carefully. For example:   
+- Are they all within the land boundary of your study area (for terrestrial species)?   
+- Are all the points within the appropriate country or administrative region (this information may be stored with the point)?
+- Are they within the approximate known range of your study species?
+- Are there any points which are very far from all the others?   
+
+To help visualise, we'll also bring in a shapefile of the administrative regions of northwest Peru. We'll use the `sf` library to do this. We'll be learning more about this library very soon!!! Note that all `sf` functions start with `st_`.
+We'll also use `sf` to convert the `data.frame` with our species points into a spatial data frame.
+
+```{r plot_points, exercise = TRUE, exercise.setup = "load_data"}
+
+library(sf)
+## Read the shapefile into R
+dpts <- st_read("data/depts_pe_northwest.shp")
+
+## Conver the data frame into a spatial object
+spp_sf <- st_as_sf(spp, coords = c("Lon", "Lat"), crs = 4326) # here we tell sf which columns the coordinates are in, and what their spatial reference is, ie. geographic coordinates as WGS 1984, aka, 'EPSG:4326'
+
+## plot the northwest departments 
+plot(st_geometry(dpts))
+
+## add the points on top
+plot(st_geometry(spp_sf), col = "red", pch = 16, add = T) # use add = T to add to an existing plot
+
+```
+
+#### **Environmental variables**
+
+For the model, we will use six bioclimatic layers: 
+
+bio1 - mean annual temperature  
+bio2 - Mean Diurnal Range (Mean of monthly (max temp - min temp))  
+bio4 - Temperature Seasonality (standard deviation)  
+bio5 - Maximum Temperature of Warmest Month  
+bio12 - Annual Precipitation  
+bio15 - Precipitation Seasonality (Coefficient of Variation)  
+
+We will use the R library, `terra` for all the raster data analysis and visualisation. Note that in this practical we are using the rasters as `.tif` files (same format as you may have used in ArcGIS).
+
+```{r load_raster, exercise = TRUE, exercise.setup = "plot_points"}
+
+# file paths to the raster (.tif) files.
+fp <- c("data/bio_01_crop.tif",
+        "data/bio_12_crop.tif",
+        "data/bio_15_crop.tif",
+        "data/bio_02_crop.tif",
+        "data/bio_04_crop.tif",
+        "data/bio_05_crop.tif")
+
+wc <- rast(fp)
+
+```
+
+Notice that we can bring all the rasters in as a single object. Have a look at a summary of the raster stack - simply run the object (`wc`). Note that the print summary tells you how many layers it has (nlyr), what the coordinate reference system is (lon/lat WGS 89 EPSG:4326) and also the minimum and maximum values of each layer (bio_01 to bio_05). Now use the plot() function to plot it. 
+
+```{r rast_summary, exercise = TRUE, exercise.setup = "load_raster"}
+# Print the summary
+
+
+# Now plot the raster stack
+
+```
+
+#### **Background points**
+
+There are lots of methods of choosing pseudoabsence points. For the moment, we will just use points chosen at random across the study area. That requires defining the study area. As we did before, we will use the presence points, plus a buffer around them to define our study area. 
+
+The operation consists of creating a *convex hull* around the presence points, with  `st_convex_hull()`, then placing a buffer around this, with `st_buffer()`. The resulting polygon can be used to constrain the absence point generation.
+
+```{r study_area, exercise = TRUE, exercise.setup = "load_raster"}
+
+study_area <- st_buffer(st_convex_hull(st_union(spp_sf)), dist = 50000)
+
+```
+
+Check the polygon you've just created by plotting it (use `plot`) and then adding the points within it. Look at the code above for how to plot the points.
+
+```{r plot_buffer, exercise = TRUE, exercise.setup = "study_area"}
+
+
+
+```
+
+To create random points, we can use the `terra` function `spatSample`. First, we will create a raster mask (or template) using our study area polygon. Then we can tell `spatSample()` only to choose points within this area.
+
+We will copy just one layer from the worldclim layers, give the raster a single value (1) and then mask around the study area. Plot the raster, if you want to see what it looks like.
+
+```{r raster_mask, exercise = TRUE, exercise.setup = "study_area"}
+
+msk <- rast(wc, nlyr = 1)
+values(msk) <- 1
+
+msk <- mask(msk, vect(study_area))
+
+```
+
+To get the random points, we need to give the function our study area, how many points we want, and the method of sampling. Also, we need to ask for the xy coordinates to be returned and to not sample NA values (everything outside our study area). For the moment, we'll use just the random method. 
+
+Note that as this is a random process, to be able to repeat exactly our study, we need to set the random seed. Otherwise, our results will be slightly different each time.
+
+
+```{r bg_point, exercise = TRUE, exercise.setup = "raster_mask"}
+set.seed(101)
+bg <- spatSample(msk, size = 5000, method = "random", na.rm= TRUE, xy = TRUE)
+
+
+```
+
+Have a look at the first six lines of the `bg` object, that contains the coordinates of our background points.
+
+```{r head_bg, exercise = TRUE, exercise.setup = "bg_point"}
+
+
+
+```
+
+#### Building a model
+
+We will use the same method as before to make the model, in Maxent. The function `Maxent` uses the same software as the standalone programme. We will use the stack of rasters (`wc`), from which the function will extract values at the presence points (`spp_sf`) and background points (`bg`). We will also instruct `Maxent` to remove any spatial duplicates in the presence points (i.e. if we have more than occurrence point within the same raster cell). Often, it is better to do this yourself previously.
+
+We are also going to set up the training and testing data. We will withhold 20% of our points for testing, and run the model just with the remaining 80% of occurrence points. Then we can use the other 20% for validation.
+
+```{r withhold, exercise = TRUE, exercise.setup = "bg_point"}
+
+# withold a 20% sample for testing (that is, 1/5 of the data)
+fold <- folds(spp_sf, k=5)
+
+## Create the test data from the occurrences
+spp_test <- spp_sf[fold == 1, ]
+
+## Create the training data from the occurrences
+spp_train <- spp_sf[fold != 1, ]
+
+```
+
+Use the function `nrow()` on the `spp_test` and `spp_train` objects to check how many test and training occurrence points are in each spatial data frame. Are your values correct? Does `spp_test` contain 20% of the occurrence points in `spp_df`?
+
+```{r check_test, exercise = TRUE, exercise.setup = "withhold"}
+
+
+
+```
+
+```{r check_test-solution, exercise.reveal_solution = TRUE}
+
+nrow(spp_test)
+
+nrow(spp_train)
+
+```
+
+Now we are ready to run Maxent with our training data, the background absences and the environmental layers.
+
+```{r maxent, exercise = TRUE, exercise.setup = "bg_point"}
+
+mx <- MaxEnt(wc, p = vect(spp_train), a = bg[,c("x", "y")], removeDuplicates = TRUE)
+
+
+```
+You can see similar results to the standalone MaxEnt if you run the resulting model object, `mx`.
+
+Try it here:
+
+```{r check_mx, exercise = TRUE, exercise.setup = "maxent"}
+
+
+```
+
+
+## 2. Model evaluation
+
+
+#### **Evaluation statistics**
+
+The `predicts` package has a function for simple model evalation, `pa_evaluate()`. Now we can use the test occurrence points, with the same background points and our fitted model object, `mx`.
+
+
+```{r mx_eval, exercise = TRUE, exercise.setup = "maxent"}
+
+mx_eval <- pa_evaluate(p = spp_test, a = bg[,c("x", "y")], model = mx, x = wc)
+
+```
+
+Using this object, we can plot a ROC curve, and show the AUC value. Look back at the other notes to remind yourself what the plot shows.
+
+```{r roc, exercise = TRUE, exercise.setup = "mx_eval"}
+
+plot(mx_eval, "ROC")
+
+```
+
+We can also show a boxplot of model values at presence and absence points. Do you remember how this related to AUC?
+
+```{r bxplt, exercise = TRUE, exercise.setup = "mx_eval"}
+
+plot(mx_eval, "boxplot")
+
+```
+
+And we can also plot different accuracy metrics (e.g. TPR, TNR at a series of thresholds)
+
+```{r TPR, exercise = TRUE, exercise.setup = "mx_eval"}
+
+plot(mx_eval, "TPR")
+
+```
+We can use the values in this object to plot TPR + TNR together.
+
+```{r tpr_tnr_plot, exercise = TRUE, exercise.setup = "mx_eval"}
+
+plot(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TPR, type = "l", col= "darkred")
+points(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TNR, type = "l", col = "darkgreen")
+
+```
+We can also add the TSS metric to this plot to see where the maximum value lies:
+
+```{r tss_plot, exercise= TRUE, exercise.setup = "mx_eval"}
+
+
+plot(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TPR, type = "l", col= "darkred")
+# Add TNR to the same plot
+points(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TNR, type = "l", col = "darkgreen")
+
+# add the sum of TPR+TNT - 1 to the plot
+points(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TPR + mx_eval@tr_stats$TNR - 1, 
+       type = "l", col = "blue")
+
+
+```
+
+Another useful feature of the evaluation object is that it contains some thresholds. For example, the maximum of $TPR + TNR$. This should be equal to the threshold value at the highest point on the blue line above.
+
+```{r maxTPR, exercise= TRUE, exercise.setup = "mx_eval"}
+
+mx_eval@thresholds$max_spec_sens
+
+```
+
+We're going to assign the maximum specificity + sensitivity threshold to an object so that we can use it to threshold our prediction map.
+
+```{r make_tr, exercise = TRUE, exercise.setup = "mx_eval"}
+
+tr <- mx_eval@thresholds$max_spec_sens
+
+```
+
+
+#### **Make a prediction from the model**
+
+Finally, we can predict our model onto the climate layers and see a map of species distribution, as habitat suitability, or 'probability' of occurrence.
+
+
+```{r mx_predict, exercise = TRUE, exercise.setup = "make_tr"}
+
+spp_pred <- predict(mx, wc)
+
+
+```
+
+
+Plot the raster created above to see the species predicted occurrence. 
+
+
+```{r pred_plot, exercise = TRUE, exercise.setup = "mx_predict"}
+
+```
+
+
+Now we can use the threshold we created to display the raster as just presence or absence
+
+```{r pred_binary, exercise = TRUE, exercise.setup = "mx_predict"}
+
+plot(spp_pred, breaks = c(0, tr, Inf), col = c("grey", "darkblue"))
+
+```
+
+
+## 3. Your turn!!!
+
+#### **Extension exercises**
+
+1. Try plotting the above map with different thresholds from the `mx_eval` object. What difference does it make? What are the different thresholds?   
+
+For the other activities, you are probably better to create a new script in a project in RStudio, if you haven't done this already.
+
+2. Try a different modelling technique (see `envelope()` function). It works in a similar way to the `MaxEnt` function.  
+
+3. Plot the resulting model, how is it different, in terms of evaluation and distribution to the maxent model?  
+
+4. Try using background points from the whole extent of the full rasters (e.g. bio_01.tif). How does this change the AUC or other evaluation metrics?
+
+5. Can you use background points from buffers around the presence points?  
+
+
+
+
+
