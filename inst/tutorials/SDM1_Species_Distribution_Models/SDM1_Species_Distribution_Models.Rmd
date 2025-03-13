@@ -18,13 +18,19 @@ library(rJava)
 
 ## 1. Introduction to Species Distribution Modelling in R
 
-This tutorial provides a brief overview to using the R `predicts` package (called `dismo` in a former version) to run a species distribution model. There are many other newer alternative packages (e.g. `biomod2`, `sjSDM`) but `predicts` is very good for a introduction to the subject and has very good documentation and tutorials online (e.g. here).
+This tutorial provides a brief overview to using the R `predicts` package (called `dismo` in a former version) to run a species distribution model. There are many other alternative packages (e.g. `biomod2`, `sjSDM`) but `predicts` is very good for a introduction to the subject and has good documentation and tutorials online (currently being updated from the `dismo` documentation).
 
 The focus will be on evaluation methods, but first, we need to make a model.
 
 We will use the data that we have already used in class, occurrence records of the Cinereous Finch from the dry forests of northwest Peru, and environmental covariates from [worldclim.](https://www.worldclim.org/data/index.html)
 
-** You have two options to run this tutorial. Either start a new project in a new instance of RStudio (with the usual folder structure) and dowload the data from the KLE and place in the corresponding folders -- OR -- follow the tutorial (as before) by using the code boxes below. Up to you! **
+**You have two options to run this tutorial.**    
+- Either start a new project in a new instance of RStudio (with the usual folder structure) and dowload the data from the KLE and place in the corresponding folders      
+-- OR --   
+
+- Follow the tutorial (as before) by using the code boxes below. Up to you!   
+
+Whichever you choose, try to explore the process by plotting, visualising or looking inside the objects you create. Remember you can use the code boxes in the tutorial in the same way as the R console. Feel free to add some extra code!!
 
 #### **Species data** 
 
@@ -157,7 +163,7 @@ Have a look at the first six lines of the `bg` object, that contains the coordin
 
 We will use the same method as before to make the model, in Maxent. The function `Maxent` uses the same software as the standalone programme. We will use the stack of rasters (`wc`), from which the function will extract values at the presence points (`spp_sf`) and background points (`bg`). We will also instruct `Maxent` to remove any spatial duplicates in the presence points (i.e. if we have more than occurrence point within the same raster cell). Often, it is better to do this yourself previously.
 
-We are also going to set up the training and testing data. We will withhold 20% of our points for testing, and run the model just with the remaining 80% of occurrence points. Then we can use the other 20% for validation.
+We are also going to set up the training and testing data. We will withhold 20% of our points for testing, and run the model just with the remaining 80% of occurrence points. Then we can use the other 20% for validation. (In this simple example, we won't use cross-validation, but that is the normal process and will be shown in a later tutorial).
 
 ```{r withhold, exercise = TRUE, exercise.setup = "bg_point"}
 
@@ -212,6 +218,7 @@ Try it here:
 #### **Evaluation statistics**
 
 The `predicts` package has a function for simple model evalation, `pa_evaluate()`. Now we can use the test occurrence points, with the same background points and our fitted model object, `mx`.
+To test our model, we will use the *hold out* data (20% of the occurrence points) - remember this wasn't used to build the model. This function uses the model we have just created (`mx`) to predict the probability of occurrence at each of these *hold out* species locations (in the same way that we can predict the value of unknown response data with a regression model). Then we will use the predicted values at the occurrence points and the background points to evaluate model performance with AUC or threshold-dependent accuracy metrics. 
 
 
 ```{r mx_eval, exercise = TRUE, exercise.setup = "maxent"}
@@ -220,7 +227,7 @@ mx_eval <- pa_evaluate(p = spp_test, a = bg[,c("x", "y")], model = mx, x = wc)
 
 ```
 
-Using this object, we can plot a ROC curve, and show the AUC value. Look back at the other notes to remind yourself what the plot shows.
+Using this object, we can plot a ROC curve, and show the AUC value. Look back at the other notes to remind yourself what the plot shows. Remember that an AUC value of 0.5 implies that the model is no better than a random prediction.
 
 ```{r roc, exercise = TRUE, exercise.setup = "mx_eval"}
 
@@ -228,7 +235,7 @@ plot(mx_eval, "ROC")
 
 ```
 
-We can also show a boxplot of model values at presence and absence points. Do you remember how this related to AUC?
+We can also show a boxplot of model values at presence and absence points. Do you remember how this is related to AUC? If you were to pick a random pair of points (one absence, one presence), then the AUC is the probability that the model value at the presence point is higher than the absence point.
 
 ```{r bxplt, exercise = TRUE, exercise.setup = "mx_eval"}
 
@@ -236,14 +243,15 @@ plot(mx_eval, "boxplot")
 
 ```
 
-And we can also plot different accuracy metrics (e.g. TPR, TNR at a series of thresholds)
+And we can also plot different accuracy metrics, for example, True Positive Rate (TPR) or True Negative Rate (TNR), over a series of thresholds. Remember that the TPR, TNR, and other accuracy metrics are threshold dependent. That is, they require a binary model output (presence/absence) for their calculation. The `pa_evaluate` function creates a series of thresholds, for example, from 0 to 1 in steps of 0.01, then for each of these thresholds, it will calculate the accuracy metric (e.g. TPR). The graph below shows the value of TPR (y-axis) for each of these threshold steps (x-axis).
 
 ```{r TPR, exercise = TRUE, exercise.setup = "mx_eval"}
 
 plot(mx_eval, "TPR")
 
 ```
-We can use the values in this object to plot TPR + TNR together.
+
+We can use a balance of different accuracy metrics to find a threshold that we will use to convert the continuous model output into a binary model output. For example, here we can plot both TPR and TNR. We can look for a suitable threshold value (on the x-axis) that balances the True Positive Rate with the True Negative Rate.
 
 ```{r tpr_tnr_plot, exercise = TRUE, exercise.setup = "mx_eval"}
 
@@ -251,10 +259,10 @@ plot(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TPR, type = "l", col= "darkred"
 points(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TNR, type = "l", col = "darkgreen")
 
 ```
-We can also add the TSS metric to this plot to see where the maximum value lies:
+
+We can use the values in the `mx_eval` object (the output from `pa_evaluate()`) to plot the sum of TPR + TNR together against each of the threshold steps. The code below simply sums the value of TPR and TNR and then plots the result against each threshold value. Here we have subtracted 1 from the result (as in the TSS metric) - this also means it fits on to the same graph. We can use this graph to see where the maximum value of TSS lies, which is one way to find a suitable threshold that balances TPR and TNR.
 
 ```{r tss_plot, exercise= TRUE, exercise.setup = "mx_eval"}
-
 
 plot(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TPR, type = "l", col= "darkred")
 # Add TNR to the same plot
@@ -267,7 +275,9 @@ points(mx_eval@tr_stats$treshold, mx_eval@tr_stats$TPR + mx_eval@tr_stats$TNR - 
 
 ```
 
-Another useful feature of the evaluation object is that it contains some thresholds. For example, the maximum of $TPR + TNR$. This should be equal to the threshold value at the highest point on the blue line above.
+Another useful feature of the evaluation object is that it contains some 'ready-made' thresholds. For example, the maximum of $TPR + TNR$, that's the same as we just visualised on the previous plot. The `max_spec_sens` value should be equal to the threshold value at the highest point on the blue line above. 
+
+**Note** Remember there are lots of (confusing!) names for each of these accuracy metrics - TPR is also known as *specificity*, and TNR as *sensitivity*.
 
 ```{r maxTPR, exercise= TRUE, exercise.setup = "mx_eval"}
 
@@ -275,7 +285,7 @@ mx_eval@thresholds$max_spec_sens
 
 ```
 
-We're going to assign the maximum specificity + sensitivity threshold to an object so that we can use it to threshold our prediction map.
+We're going to assign the maximum specificity + sensitivity threshold to an object so that we can use it to convert our continuous prediction from the model into a  binary (presence/absence) map later on.
 
 ```{r make_tr, exercise = TRUE, exercise.setup = "mx_eval"}
 
@@ -286,7 +296,7 @@ tr <- mx_eval@thresholds$max_spec_sens
 
 #### **Make a prediction from the model**
 
-Finally, we can predict our model onto the climate layers and see a map of species distribution, as habitat suitability, or 'probability' of occurrence.
+Finally, we can predict our model onto the climate layers and see a map of species distribution, as habitat suitability, or 'probability' of occurrence. This will be a continous prediction, so each pixel on the resulting raster will have a value between 0 and 1, representing probability of occurrence.
 
 
 ```{r mx_predict, exercise = TRUE, exercise.setup = "make_tr"}
@@ -297,7 +307,7 @@ spp_pred <- predict(mx, wc)
 ```
 
 
-Plot the raster created above to see the species predicted occurrence. 
+Plot the raster created above to see the species predicted occurrence! Higher values represent locations where we would be more likely to find our species of interest. 
 
 
 ```{r pred_plot, exercise = TRUE, exercise.setup = "mx_predict"}
@@ -305,7 +315,7 @@ Plot the raster created above to see the species predicted occurrence.
 ```
 
 
-Now we can use the threshold we created to display the raster as just presence or absence
+Now we can use the threshold we saved to the `tr` object earlier on to display the raster as a binary (or presence / absence) map of species distribution.
 
 ```{r pred_binary, exercise = TRUE, exercise.setup = "mx_predict"}
 
@@ -313,6 +323,7 @@ plot(spp_pred, breaks = c(0, tr, Inf), col = c("grey", "darkblue"))
 
 ```
 
+Note, that here we are just changing the way the raster is displayed. To convert the raster permanently (in a new object), we can use the `terra::classify()` function to create a new raster with just two values, those below (absence) and those above (presence) the threshold. You could then save the raster (`terra::writeRaster`) to disk and display or use for further analysis, either in `R` or in ArcGIS Pro.
 
 ## 3. Your turn!!!
 
@@ -320,15 +331,15 @@ plot(spp_pred, breaks = c(0, tr, Inf), col = c("grey", "darkblue"))
 
 1. Try plotting the above map with different thresholds from the `mx_eval` object. What difference does it make? What are the different thresholds?   
 
-For the other activities, you are probably better to create a new script in a project in RStudio, if you haven't done this already.
+For the other activities, you are probably better to create a new script in a project in RStudio, if you haven't done this already. This way, you can save a commented record of the whole modelling process.  
 
-2. Try a different modelling technique (see `envelope()` function). It works in a similar way to the `MaxEnt` function.  
+2. Try a different modelling technique (see `envelope()` function). It works in a similar way to the `MaxEnt` function, but just requires the raster stack of predictors and the presence points (it is a true presence only method).   
 
-3. Plot the resulting model, how is it different, in terms of evaluation and distribution to the maxent model?  
+3. Plot the resulting model, how is it different, in terms of evaluation and distribution to the MaxEnt model?  
 
-4. Try using background points from the whole extent of the full rasters (e.g. bio_01.tif). How does this change the AUC or other evaluation metrics?
+4. Try using background points from the whole extent of the full rasters (i.e. the rasters that don't have `_crop.tif` appended to their name, e.g. bio_01.tif). How does this change the AUC or other evaluation metrics?   
 
-5. Can you use background points from buffers around the presence points?  
+5. In a new model, can you use background points from just buffers around the presence points?   
 
 
 
