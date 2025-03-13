@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(predicts)
 library(terra)
 library(sf)
-library(rJava)
+#library(rJava)
 
 ```
 
@@ -167,6 +167,8 @@ We are also going to set up the training and testing data. We will withhold 20% 
 
 ```{r withhold, exercise = TRUE, exercise.setup = "bg_point"}
 
+library(predicts)
+
 # withold a 20% sample for testing (that is, 1/5 of the data)
 fold <- folds(spp_sf, k=5)
 
@@ -197,6 +199,8 @@ nrow(spp_train)
 Now we are ready to run Maxent with our training data, the background absences and the environmental layers.
 
 ```{r maxent, exercise = TRUE, exercise.setup = "bg_point"}
+
+library(rJava)
 
 mx <- MaxEnt(wc, p = vect(spp_train), a = bg[,c("x", "y")], removeDuplicates = TRUE)
 
