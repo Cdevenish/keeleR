@@ -198,12 +198,10 @@ nrow(spp_train)
 
 Now we are ready to run Maxent with our training data, the background absences and the environmental layers.
 
-```{r maxent, exercise = TRUE, exercise.setup = "bg_point"}
-
+```{r maxent, exercise = TRUE, exercise.setup = "withhold"}
 library(rJava)
 
 mx <- MaxEnt(wc, p = vect(spp_train), a = bg[,c("x", "y")], removeDuplicates = TRUE)
-
 
 ```
 You can see similar results to the standalone MaxEnt if you run the resulting model object, `mx`.
