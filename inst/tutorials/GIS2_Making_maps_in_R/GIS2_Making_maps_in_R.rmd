@@ -1,0 +1,53 @@
+---
+title: "GIS2 Making maps in R"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(sf)
+library(terra)
+library(tmap)
+
+```
+
+## Making maps in R
+
+#### **Intro the tmap package**
+
+The tmap package can be used to make static maps (e.g. to export to an image for a report or publication), interactive maps (for a webpage or online document) as well as making it easy to make multiple maps at the same time, grouped by a column in your data frame (e.g. by species, by region, by project). 
+
+
+tmap builds up map in layers (similar to ggplot2, if you are familiar with that package). Each line of code (or pairs, more exactly) adds another layer to your map (similar to turning on layers in ArcGIS).
+
+tmap uses two main types of functions and we often use these together in subsequent lines of code. First, **a function to add spatial data**, and then **a function to change the style of the spatial data** (e.g. choose symbol type, change size of symbols, colour polygons by an attribute, change line thickness, etc).
+
+The first function is generally `tm_shape()` which adds an sf or raster object to your map. The second function depends on the type of spatial data you are adding, some common examples are:
+
+
+function| geometry type | example functionality
+--------|---------------|-----------------------
+tm_symbols | points | change point colour, size
+tm_dots | points | simple dots
+tm_borders | polygons| simple polygons without fill colour
+tm_polygons | polygons | complete control of over polygon fill, border, etc
+tm_line | lines | colour, thickness and style of lines
+tm_raster | raster | raster attributes
+
+##### **Simple example**
+
+```{r tmap_simple, exercise = TRUE}
+
+
+
+```
+
+
+
+## Make a map in R
+
+Create a map for a report that shows the sample design for either the first or second sampling design question above. Write the code in a new R script and export the map to an image, ready to paste into a report.
+

@@ -1,11 +1,14 @@
 ---
 title: "GIS1_Intro_to_GIS_in_R"
-output: learnr::tutorial
-css: css/custom_styles.css
+output: 
+  learnr::tutorial:
+    css: css/custom_styles.css
 runtime: shiny_prerendered
 ---
 
 ```{r setup, include=FALSE}
+## 
+
 library(learnr)
 knitr::opts_chunk$set(echo = FALSE)
 library(knitr)
@@ -14,9 +17,9 @@ library(knitr)
 library(sf)
 #library(geodata)
 
-vtrees <- readRDS("./data/vtrees.rds")
+vtrees <- readRDS("data/vtrees.rds")
 tree_buffer <- st_buffer(vtrees, dist = 100)
-#exercise.reveal_solution = TRUE
+roads <- readRDS("./data/roads.rds")
 
 ## points
 mp <- data.frame(id = c("pt1","pt2", "pt3"),
@@ -24,9 +27,9 @@ mp <- data.frame(id = c("pt1","pt2", "pt3"),
                  y = c(5,10,8))
 pts <- st_as_sf(mp, coords = c("x", "y"))
 
-set.seed(999)
-mp2 <- data.frame(x = as.integer(runif(15, 1, 14)),
-                  y = as.integer(runif(15, 1, 14)))
+set.seed(99)
+mp2 <- data.frame(x = as.integer(runif(10, 5, 14)),
+                  y = as.integer(runif(10, 5, 14)))
 rnd_pts <- st_as_sf(mp2, coords = c("x", "y"))
 
 ## lines
@@ -65,7 +68,7 @@ rm(mp, s1, s2, s3, centroids, r,
 The `sf` package extends R into a powerful GIS for vector data (points, lines, polygons) based on the **s**imple **f**eatures [standards for geographic data](https://en.wikipedia.org/wiki/Simple_Features). The package uses an extended form of the data.frame to include a `geometry` column, holding the spatial data (points, lines, polygons). The other columns of the data.frame can hold attribute table (like the attribute table of a shapefile).  
 Most of the functions you'll use begin `st_`, such as, `st_buffer()` to create a buffer around shapes. This is convenient, as it tells you which package the function comes from.
 
-Here is an sf `data.frame` for a point file. It contains four columns of attribute data (id, girth, species, status) and the geometry column with the point coordinates.
+Here is an sf `data.frame` for a point file. These are the locations of ancient trees on Keele campus. It contains four columns of attribute data (id, girth, species, status) and the geometry column with the point coordinates.
 
 ```{r sf_dataframe1}
 kable(data.frame(vtrees), row.names = FALSE)
@@ -110,12 +113,13 @@ quiz(
                  allow_retry = TRUE),
   question_radio("How many points does the data set have?",
                  answer("4"),
-                 answer("5", correct = TRUE))
+                 answer("5"),
+                 answer("6", correct = TRUE))
   )
 
 ```
 
-#### Simple plotting
+#### **Simple plotting**
 
 We can plot the data set, using the `plot` function. By default, it will create a separate plot for each attribute column of the dataframe.
 
@@ -129,10 +133,12 @@ To limit this to just a single column, we can subset the dataframe using `[,]`. 
 ```{r sf_plot2, exercise = TRUE}
 plot(vtrees[,"species"], pch = 16)
 ```
-
+   
 
 ******
-**R code reminder:** You can subset a `data.frame` by using the square brackets [,] directly after the `data.frame` name. Before the comma: select rows with row numbers `c(1,4,6,10)` or a logical expression `vtrees$species == "oak"`; after the comma: select columns with column names `c("species", "id")`, numbers `1:3` or a logical expression.
+**R code reminder:** You can subset a `data.frame` by using the square brackets [,] directly after the `data.frame` name.   
+- Before the comma: select rows with row numbers `c(1,4,6,10)` or a logical expression `vtrees$species == "oak"`;  
+- after the comma: select columns with column names `c("species", "id")`, numbers `1:3` or a logical expression.  
 ******
 
 
@@ -153,38 +159,49 @@ To limit this to just the points, we can use the `st_geometry()` function. Then,
 plot(st_geometry(vtrees), pch = 16, col = "darkgreen")
 ```
 
-We can add other layers to a plot by plotting each in turn. In the first plot, you need to use `reset = FALSE` to allow a second plot on top, and then we use `add = TRUE` in subsequent calls to plot to add extra layers.
+We can add other layers to a plot by plotting each in turn. The simplest way of making quick plots is to use st_geometry() and then include `add = TRUE` in subsequent calls to plot to add extra layers.
 
-Here we plot a simple polygon of Keele campus, and then add the veteran tree locations.
+Here we plot a simple layer of roads on Keele campus, and then add the veteran tree locations.
 
 ```{r sf_plot_add, exercise = TRUE}
 
-#plot(keele_campus, reset = FALSE)
-plot(vtrees[,"species"], add =T)
+plot(st_geometry(roads_Keele), col = "black")
+plot(st_geometry(vtrees), pch = 16, add = T, col = "darkgreen")
 
 ```
 
-There are other ways to plot spatial information, especially for cartography (with the `tmap` package. We will look at these later.
+If you don't use `st_geometry`, then in the first plot, you need to use `reset = FALSE` to allow a second plot on top. This is useful if you want to include the default title and legend.
 
-#### Importing spatial data into R
+However, there are other ways to plot spatial information, especially for cartography (with the `tmap` package. We will look at these later).
 
-To import data from a shapefile (or other spat
-ial format, e.g. .kml, .gpx), use the `st_read()` function. For most formats, you can simply use the path to your file. Remember, for shapefiles, these are made up multiple components, they all need to be in the same folder, but you only need to include the .shp component in your `st_read()` function.
+#### **Importing spatial data into R**
+
+To import data from a shapefile (or other spatial format, e.g. .kml, .gpx), use the `st_read()` function. For most formats, you can simply use the path to your file. Remember, for shapefiles, these are made up multiple components, they all need to be in the same folder, but you only need to include the .shp component in your `st_read()` function.
 
 
 Note that we have to name and create an R object on the left-hand side of the `<-` arrow, you can name this as you like, but keep it short and meaningful!
 
-```{r import_sf, exercise = T}
+```{r import_sf, exercise = TRUE}
 
-keele_paths <- st_read("data/keele_paths.shp")
+keele_roads <- st_read("data/keele_roads.shp")
 
 ```
 
-Print the `keele_paths` object and look at the structure of the data frame, the coordinate system and the extent.
+Print the `keele_roads` object and look at the structure of the data frame, the coordinate system and the extent.
 
-##### Transforming between Coordinate Reference Systems
+```{r print_sf, exercise = TRUE}
 
-As the veteran trees shapefile is in WGS 1984 geographic coordinates. It would be more useful to have this as British National Grid, so that it is compatible with the other spatial data we are going to use later. The `st_transform()` function to convert between CRS. 
+```
+
+```{r print_sf-solution}
+
+keele_roads
+
+```
+
+##### **Transforming between Coordinate Reference Systems**
+
+The veteran trees shapefile is in WGS 1984 geographic coordinates. It would be more useful to have this as British National Grid, so that it is compatible with the other spatial data we are going to use later. We can use the `st_transform()` function to convert between coordinate reference systems (CRS). 
 
 ```{r transform1, exercise = TRUE}
 
@@ -192,9 +209,9 @@ vtrees_bng <- st_transform(vtrees, crs = "EPSG:27700")
 
 ```
 
-Note that we have to place the original sf object first (vtrees), then the new CRS. The format for the coordinate reference system follows the [EPSG standard](). As you can see above, the British National Grid has the [code 27700]().  
+Note that we have to place the original sf object first (vtrees), then the new CRS. The format for the coordinate reference system follows the [EPSG standard](). As you can see above, the British National Grid has the [code 27700](). Print the transformed object in the code box above to verify the new CRS.
 
-#### Geoprocessing operations in sf in R
+#### **Geoprocessing operations in sf in R**
 
 For this section, we're going to use some simple shapes made up of points, lines and polygons. As these are only for illustration, they don't have a coordinate reference system, but they are still `sf` objects, and we can visualise their coordinates if we include axes and grid lines on a plot.
 
@@ -218,7 +235,7 @@ plot(pts, pch = 16)
 
 We can extract the coordinates from the `sf` object (e.g. for each point in this example) by using the `st_coordinates()` function. Simply put `pts` inside the function and run it.
 
-```{r pts_coords, exericse = TRUE}
+```{r pts_coords, exercise = TRUE}
 
 
 ```
@@ -283,8 +300,7 @@ Create a 100 m buffer around the veteran trees. You might need this for planning
 
 ```
 
-```{r buffer1-solution, exercise.reveal_solution = TRUE
-}
+```{r buffer1-solution, exercise.reveal_solution = TRUE}
 
 tree_buffer <- st_buffer(vtrees, dist = 100)
 
@@ -326,15 +342,7 @@ plot(st_geometry(vtrees), pch = 16, col = "blue", add = T)
 
 ##### **Lines**
 
-Here we have three lines in an sf data frame. The object is `lns`. We can print the object to see the geometry type, the attribute columns (here, just `id`) and the bounding box of the data frame.
-
-```{r lns1, exercise = TRUE}
-
-lns
-
-```
-
-Plot the lines! Use `lwd = 2` inside the `plot()` function to increase the width of the lines (only on the plot).
+Here we have three lines in an sf data frame. The object is `lns`. Plot the lines! Use `lwd = 2` inside the `plot()` function to increase the width of the lines (only on the plot).
 
 ```{r lns_plot1, exercise = TRUE}
 
@@ -447,7 +455,7 @@ cHull_pts <- st_convex_hull(pts)
 
 What do you notice if we plot this?
 
-```{r plot_chull1}
+```{r plot_chull1, exercise = TRUE, exercise.setup = "chull1"}
 
 plot(st_geometry(cHull_pts))
 
@@ -480,9 +488,7 @@ If you were delimiting a study area, you might want to add a buffer around the c
 
 ##### **Intersection**
 
-Intersections are fundamental geometrical operations. For example, we can use them to calculate area of overlap in geometries.
-
-Look back at the plot of the circles and other polygons. Note the shapes of the overlaps.
+Intersections are fundamental geometrical operations. For example, we can use them to calculate area of overlap in geometries. Look at the plot of the circles and other polygons. Note the shapes of the overlaps.
 
 ```{r}
 
@@ -536,23 +542,111 @@ circle3 <- crcls[crcls$id == "circle3",]
 ```
 Have a look at these random points, with circle3 plotted on top:
 
-```{r clip2, exercise = TRUE, exercise.setup = "clip1"}
-plot(rnd_pts, pch = 16)
+```{r clip2}
+circle3 <- crcls[crcls$id == "circle3",]
+
+plot(st_geometry(rnd_pts), pch = 16, ylim = c(0,15),xlim = c(0,15))
 plot(st_geometry(circle3), add= TRUE)
 ```
 
-In the `st_intersects()` function, the first argument is the shape (or geometry) that we are asking that "yes / no" question about. For example, do the points (1^st^ argument) lie inside the circle (2^nd^ argument)?
+In the `st_intersects()` function, the first argument is the shape (or geometry) that we are asking that "yes / no" question about. For example, do the points (1^st^ argument) lie inside the circle (2^nd^ argument)? Run the code and then print the result (i.e. run the `pts_intersect` object).
 
-```{r, clip2-solution}
-
+```{r clip3, exercise = TRUE, exercise.setup = "clip1"}
 pts_intersect <- st_intersects(rnd_pts, circle3)
 
-plot(st_geometry(crcls[crcls$id == "circle3",]), add = T)
+```
+
+```{r clip3-solution, exercise.reveal_solution = TRUE}
+pts_intersect <- st_intersects(rnd_pts, circle3)
+pts_intersect
+
+```
+
+What can you see?  
+The default result of `st_intersects` is a *sparse matrix* - actually a kind of list. For each point (in the first argument of the function), it provides the row number of the second geometry argument where the geometries intersect. In our case, where the points lie inside the circle (also, in this case, `circle3` is a single row). So, for the first point of `rnd_pts`, the result is 1 as it intersects (or lies within) the first (and only) polygon in `circle3`. The second two points (row 2 and 3) are empty as they do not intersect any polygons. To get the points that are inside the circle, we can ask which of the results are not empty.  
+
+The `lengths()` function gives us the length (or number of items) of each elemennt of a list. Here, this will either be 1, where a point intersects the circle, or it will be empty (where it doesn't). 
+```{r clip4, exercise =  TRUE, exercise.setup = "clip3"}
+
+lengths(pts_intersect)
+
+```
+
+If we ask which of the lengths are greater than 0, we will have the row number (or index) of each intersecting point (in the circle).
+
+```{r clip5, exercise =  TRUE, exercise.setup = "clip3"}
+
+lengths(pts_intersect) > 0
+
+```
+
+We can now use this results to subset (or index) our rnd_pts (using the same `[,]` indexing as previously). For example, we could just plot those points inside the circle:
+
+```{r clip6, exercise =  TRUE, exercise.setup = "clip3"}
+
+plot(st_geometry(circle3))
+plot(st_geometry(rnd_pts[lengths(pts_intersect) > 0,]), add = T)
+
+```
+
+Alternatively, we could colour the points seperately with those inside or outside the circle. We could either do this directly with the `col` argument of the `plot)()` function, or we could add a new column to the `rnd_pts` object to signal which points are inside the circle.
+
+```{r clip7, exercise =  TRUE, exercise.setup = "clip3"}
+
+plot(st_geometry(rnd_pts), 
+     col = (lengths(pts_intersect) > 0) + 1, 
+     pch = 16,
+     ylim = c(0,15))
+
+plot(st_geometry(circle3), add = T)
+
 ```
 
 ##### **Erase**
 
+To erase a part of a polygon with another polygon, we can use the `st_difference()` function.
 
+For example, let's erase the overlaps (that we saw above with the intersection) from the circle shapes.
+
+Here are the geometries again:
+```{r erase1}
+
+plot(st_geometry(crcls))
+plot(st_geometry(pls), add = T)
+
+```
+
+The 1^st^ argument of `st_difference()` is the shape we want to erase from, and the 2^nd^ argument is the polygon we want to use as the 'eraser'. Note that we need to wrap it with `st_union()`. 
+
+```{r erase2, exercise = TRUE}
+circle_erase <- st_difference(crcls, st_union(pls))
+
+```
+
+
+```{r erase_plot, exercise = TRUE, exercise.setup = "erase2"}
+
+plot(st_geometry(circle_erase), col = "grey")
+
+```
+
+
+
+```{r quiz2, include = FALSE}
+#### Recap Quiz
+
+quiz(
+  question_radio("What is the geometry type of the above data frame?",
+                 answer("Point", correct = TRUE),
+                 answer("Polygon"),
+                 answer("Line"),
+                 answer("MultiPoint"),
+                 answer("MultiPolygon"),
+                 random_answer_order = TRUE,
+                 allow_retry = TRUE)
+)
+
+```
 
 
 ## Using GIS for sample design
@@ -565,7 +659,7 @@ Using the above geoprocessing skills, you're going to create a sampling design t
 Use each of the following steps to complete the sampling design. 
 Create a new project in R studio (use a new instance of R studio if you want to keep this tutorial running) and follow the usual project folder structure. Unzip the "sample_design" folder into your inData folder. Now copy the following instructions into a new R script and make them all into comments (ctrl + shift + C is a shortcut for this in RStudio). Now write the appropriate code between the comments to complete the task. When you have finished, you will have a well-commented script that you might be able to adapt for future fieldwork. Feel free to add further comments that will remind your future self what you were doing!
 
-**Import data**
+**Import data**   
 1. Install and/or load the appropriate libraries  
 
 2. Import the veteran tree points **vet_trees.shp**, CEH landcover polygons **ceh_lc23_ds.shp** and road lines **OS_vml_road_centreline.shp** shapefiles into R as individual sf objects.  
@@ -574,10 +668,10 @@ Create a new project in R studio (use a new instance of R studio if you want to 
 
 4. If any are not in British National Grid, transform them to BNG (you can use EPSG:27700).  
 
-**Creating the veteran tree sampling area**
+**Creating the veteran tree sampling area**   
 5. Create a buffer around the veteran trees, and assign to a new object.    
 
-**Creating the non-veteran tree sampling area**
+**Creating the non-veteran tree sampling area**   
 6. Select just the woodland polygons from the CEH landcover data set and assign them to a new object.  
 7. Create a buffer around the paths of the appropriate distance.  
 
@@ -598,55 +692,27 @@ Create a new project in R studio (use a new instance of R studio if you want to 
 
 A. Can you modify your script so that you don't sample within 5 m of a woodland edge?  
 
-##### Part 1
+##### Part 2
 
 Can you write a new script to sample soil from points along a distance gradient from veteran trees? Sample 4 points at approximately 0, 2.5, 5, 7.5 and 10 m from the trees. Think in terms of sampling points in concentric polygon rings around the tree. How can you create these from buffers and using the `st_difference()` function? What alternative methods might exist?
 
 
-## Making maps in R
-
-#### **Intro the tmap package**
-
-The tmap package can be used to make static maps (e.g. to export to an image for a report or publication), interactive maps (for a webpage or online document) as well as making it easy to make multiple maps at the same time, grouped by a column in your data frame (e.g. by species, by region, by project). 
-
-
-tmap builds up map in layers (similar to ggplot2, if you are familiar with that package). Each line of code (or pairs, more exactly) adds another layer to your map (similar to turning on layers in ArcGIS).
-
-tmap uses two main types of functions and we often use these together in subsequent lines of code. First, **a function to add spatial data**, and then **a function to change the style of the spatial data** (e.g. choose symbol type, change size of symbols, colour polygons by an attribute, change line thickness, etc).
-
-The first function is generally `tm_shape()` which adds an sf or raster object to your map. The second function depends on the type of spatial data you are adding, some common examples are:
-
-
-function| geometry type | example functionality
---------|---------------|-----------------------
-tm_symbols | points | change point colour, size
-tm_dots | points | simple dots
-tm_borders | polygons| simple polygons without fill colour
-tm_polygons | polygons | complete control of over polygon fill, border, etc
-tm_line | lines | colour, thickness and style of lines
-tm_raster | raster | raster attributes
-
-##### **Simple example**
-
-```{r tmap_simple, exercise = TRUE}
-
-
-
-```
-
-
-
-## Make a map in R
-
-Create a map for a report that shows the sample design for either the first or second sampling design question above. Write the code in a new R script and export the map to an image, ready to paste into a report.
-
-
-
 ## Resources for GIS in R
 
-Some resources for using R as a GIS:
+#### Some resources for using R as a GIS:
 
 [Geocomputation with R](https://r.geocompx.org/)
 
 [Elegant and informative maps with tmap](https://tmap.geocompx.org/)
 
+
+#### Credits  
+Ancient tree inventory data   
+https://ati.woodlandtrust.org.uk/
+
+VectorMap Local  
+Crown copyright and database rights 2025 Ordnance Survey (AC0000851941)
+
+Land cover map  
+Marston, C.; Rowland, C.S.; O’Neil, A.W.; Morton, R.D. (2024). Land Cover Map 2023.
+NERC EDS Environmental Information Data Centre. https://doi.org/10.5285/398dd41e-3c08-47f5-811f-da990007643f
