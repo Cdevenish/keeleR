@@ -69,3 +69,13 @@ NULL
 #' learnr::run_tutorial("SDM1_Species_Distribution_Models", package = "keeleR")
 #' }
 NULL
+#' @name GIS1_Intro_to_GIS_in_R
+#' @title Introduction to GIS in R
+#' @description
+#' A brief intro to using R as a GIS
+#' @keywords Geographic Information Systems, GIS, spatial data analysis
+#' @examples
+#' \dontrun{
+#' learnr::run_tutorial("GIS1_Intro_to_GIS_in_R", package = "keeleR")
+#' }
+NULL

@@ -27,9 +27,9 @@ mp <- data.frame(id = c("pt1","pt2", "pt3"),
                  y = c(5,10,8))
 pts <- st_as_sf(mp, coords = c("x", "y"))
 
-set.seed(99)
-mp2 <- data.frame(x = as.integer(runif(10, 5, 14)),
-                  y = as.integer(runif(10, 5, 14)))
+set.seed(2)
+mp2 <- data.frame(x = as.integer(runif(15, 2, 14)),
+                  y = as.integer(runif(15, 2, 14)))
 rnd_pts <- st_as_sf(mp2, coords = c("x", "y"))
 
 ## lines
@@ -51,13 +51,15 @@ centroids <- st_as_sf(
 r <- c(1,2,4)
 crcls <- st_buffer(centroids, dist = r)
 
+inner_buffer <- st_buffer(crcls, dist = -0.5)
+
 ## polygons
 p1 <- st_as_sfc(st_as_text(st_polygon(list(rbind(c(5,7), c(5,14), c(2,14), c(2,7), c(5,7))))))
 p2 <- st_as_sfc(st_as_text(st_polygon(list(rbind(c(10,7), c(10,12), c(6,7), c(10,7))))))
 pls <- st_as_sf(data.frame(id = c("rectangle", "triangle"),
                            geometry = c(p1, p2)))
 
-rm(mp, s1, s2, s3, centroids, r,
+rm(mp, mp2, s1, s2, s3, centroids, r,
    p1, p2)
 
 ```
@@ -215,9 +217,10 @@ Note that we have to place the original sf object first (vtrees), then the new C
 
 For this section, we're going to use some simple shapes made up of points, lines and polygons. As these are only for illustration, they don't have a coordinate reference system, but they are still `sf` objects, and we can visualise their coordinates if we include axes and grid lines on a plot.
 
-##### **Points**
+![](images/plot_shapes.png)
 
-PLOT
+
+##### **Points**
 
 The first set of points is called `pts`. Print the `pts` object and then plot it here, using `pch = 16` to give them a solid fill.
 
@@ -429,9 +432,9 @@ plot(st_geometry(inner_buffer), add = TRUE)
 
 ```
 
-What's the area of the inner buffers? 
+What's the area of the inner buffers? Use the code box to find out!
 
-```{r inner_area, exercise = TRUE, exercise.setup = "neg_buffer"}
+```{r inner_area, exercise = TRUE}
 
 ```
 
@@ -531,16 +534,17 @@ st_area(intsct)
 
 ```
 
-##### **Clip**
+##### **Points in polygon**
 
-We use `st_intersects()` to identify which polygons, points or lines intersect with the bounds of another polygon. Note that this function basically gives us a **"yes / no"** answer, a shape either intersects with another one or not. Conversely, the `st_intersection()` function returns a geometry (e.g. a polygon). We're going to use the circle3 from our `crcls` object to identify (and then extract) the points that lie inside it. First we will select just circle3. Note how we use the `[]`, with a comma, to select just circle3. This codes says *return the row(s) where `id` is equal to "circle3"*.
+We can also use `st_intersection()` to extract points that are within a polygon. The example will extract from a set of random points those that lie in the largest circle of the `crcls` polygon. First we will select just circle3. Note how we use the `[,]`, with a comma, to select this shape. This codes says *return the row(s) where `id` is equal to "circle3"*.
 
 ```{r clip1, exercise = TRUE}
 
 circle3 <- crcls[crcls$id == "circle3",]
 
 ```
-Have a look at these random points, with circle3 plotted on top:
+
+Now have a look at these random points, with circle3 plotted on top:
 
 ```{r clip2}
 circle3 <- crcls[crcls$id == "circle3",]
@@ -549,58 +553,29 @@ plot(st_geometry(rnd_pts), pch = 16, ylim = c(0,15),xlim = c(0,15))
 plot(st_geometry(circle3), add= TRUE)
 ```
 
-In the `st_intersects()` function, the first argument is the shape (or geometry) that we are asking that "yes / no" question about. For example, do the points (1^st^ argument) lie inside the circle (2^nd^ argument)? Run the code and then print the result (i.e. run the `pts_intersect` object).
+We can use the `st_intersection()` to extract the point inside the circle.
 
-```{r clip3, exercise = TRUE, exercise.setup = "clip1"}
-pts_intersect <- st_intersects(rnd_pts, circle3)
+```{r clip_extract, exercise = TRUE}
 
-```
-
-```{r clip3-solution, exercise.reveal_solution = TRUE}
-pts_intersect <- st_intersects(rnd_pts, circle3)
-pts_intersect
+pts_extract <- st_intersection(rnd_pts, circle3)
 
 ```
 
-What can you see?  
-The default result of `st_intersects` is a *sparse matrix* - actually a kind of list. For each point (in the first argument of the function), it provides the row number of the second geometry argument where the geometries intersect. In our case, where the points lie inside the circle (also, in this case, `circle3` is a single row). So, for the first point of `rnd_pts`, the result is 1 as it intersects (or lies within) the first (and only) polygon in `circle3`. The second two points (row 2 and 3) are empty as they do not intersect any polygons. To get the points that are inside the circle, we can ask which of the results are not empty.  
+Now plot the rnd_pts, then the pts_extract in another colour as well as the circle3 on top. 
 
-The `lengths()` function gives us the length (or number of items) of each elemennt of a list. Here, this will either be 1, where a point intersects the circle, or it will be empty (where it doesn't). 
-```{r clip4, exercise =  TRUE, exercise.setup = "clip3"}
+```{r clip_extract2, exercise =  TRUE, exercise.setup = "clip_extract"}
 
-lengths(pts_intersect)
 
 ```
 
-If we ask which of the lengths are greater than 0, we will have the row number (or index) of each intersecting point (in the circle).
-
-```{r clip5, exercise =  TRUE, exercise.setup = "clip3"}
-
-lengths(pts_intersect) > 0
-
-```
-
-We can now use this results to subset (or index) our rnd_pts (using the same `[,]` indexing as previously). For example, we could just plot those points inside the circle:
-
-```{r clip6, exercise =  TRUE, exercise.setup = "clip3"}
-
-plot(st_geometry(circle3))
-plot(st_geometry(rnd_pts[lengths(pts_intersect) > 0,]), add = T)
-
-```
-
-Alternatively, we could colour the points seperately with those inside or outside the circle. We could either do this directly with the `col` argument of the `plot)()` function, or we could add a new column to the `rnd_pts` object to signal which points are inside the circle.
-
-```{r clip7, exercise =  TRUE, exercise.setup = "clip3"}
-
-plot(st_geometry(rnd_pts), 
-     col = (lengths(pts_intersect) > 0) + 1, 
-     pch = 16,
-     ylim = c(0,15))
-
+```{r clip_extract2-solution, exercise.reveal_solution = TRUE}
+plot(st_geometry(rnd_pts))
+plot(st_geometry(pts_extract), col = "red", pch = 16, add = T)
 plot(st_geometry(circle3), add = T)
 
 ```
+
+If we just wanted to just identify which points (out of all of them) are inside the circle, then we could use a different kind of function. `st_intersect()`. As oppose to the functions above, this doesn't return a geometry, but tells us which points are inside the circle, and which aren't. More on that later!
 
 ##### **Erase**
 
