@@ -1,0 +1,209 @@
+---
+title: "GIS2 Making maps in R"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(sf)
+library(terra)
+library(tmap)
+
+pa <- st_read("data/WDPA_giraffe.shp")
+giraffe_range <- st_read("data/giraffe_range.shp")
+africa <- st_read("data/gadm0_africa.shp")
+
+
+iucn_levels <- c("Ib","II","III","IV","V","VI") # "Unknown"
+pa$IUCN_CAT[pa$IUCN_CAT %in% c("Not Reported","Not Assigned", "Not Applicable")] <- NA
+pa$IUCN_CAT <- factor(pa$IUCN_CAT, levels = iucn_levels)
+
+```
+
+## Quick intro to making maps in R
+
+#### **Intro the tmap package**
+
+The `tmap` package can be used to make static maps (e.g. to export to an image for a report or publication), interactive maps (for a webpage or online document) as well as making it easy to make multiple maps at the same time, grouped by a column in your data frame (e.g. by species, by region, by project). 
+
+
+`tmap` builds up map in layers (similar to ggplot2, if you are familiar with that package). Each line of code (or pairs, more exactly) adds another layer to your map (similar to turning on layers in ArcGIS).
+
+`tmap` uses two main types of functions and we often use these together in subsequent lines of code. First, **a function to add spatial data** (e.g. shapefiles or rasters), and then **a function to change the style of the spatial data** (e.g. choose symbol type, change size of symbols, colour polygons by an attribute, change line thickness, etc). Subsequent layers can be added, using the same pairs of functions for each layer. All lines of code are joined by a `+` at the end of the line.
+
+The first function is generally `tm_shape()` which adds an sf or raster object to your map. The second function depends on the type of spatial data you are adding, some common examples are:
+
+
+function| geometry type | example functionality
+--------|---------------|-----------------------
+tm_symbols | points | change point colour, size
+tm_dots | points | simple dots
+tm_borders | polygons| simple polygons without fill colour
+tm_polygons | polygons | complete control of over polygon fill, border, etc
+tm_line | lines | colour, thickness and style of lines
+tm_raster | raster | raster attributes
+
+##### **Simple example**
+
+We have `sf` spatial data frames with polygons of giraffe *Giraffa camelopardalis* range across Africa (giraffe_range). Have a look at the plot in `tmap`:
+
+
+```{r tmap_simple, exercise = TRUE}
+library(tmap)
+
+# join each line of code with a + at the end of the line:
+tm_shape(giraffe_range)+
+  tm_polygons()
+
+```
+
+
+We can add the outline of African countries first to provide a geographic context:
+
+```{r tmap_simple2, exercise = TRUE}
+tm_shape(africa)+
+  tm_borders()+
+tm_shape(giraffe_range)+
+  tm_polygons()
+
+```
+
+In `tm_polygons()`, you can change the colour of the polygons using `col` for the outline, and `fill` for the fill colour. 
+
+```{r tmap_simple3, exercise = TRUE}
+tm_shape(africa)+
+  tm_borders(fill = "grey95", col = "black")+
+tm_shape(giraffe_range)+
+  tm_polygons(fill = "darkblue")
+
+```
+
+
+Have a look at the attribute table of this data.frame.
+```{r g_range_table, exercise = TRUE}
+
+
+```
+
+
+```{r g_range_table-solution, exercise.reveal_solution = TRUE}
+
+giraffe_range
+
+```
+
+Note that we have a column for subspecies. The `tmap` package can use columns in the attribute table to colour polygons or points by unique colours. Instead of using a colour for `fill` argument, we use the column name.
+
+```{r tmap_simple4, exercise = TRUE}
+tm_shape(africa)+
+  tm_borders(fill = "grey95", col = "black")+
+tm_shape(giraffe_range)+
+  tm_polygons(fill = "SUBSPECIES")
+
+```
+
+There is also a shapefile of protected areas in this tutorial that cover the geographic range of the giraffe. The sf spatial dataframe is called `pa`.
+
+Draw a simple map of protected areas (with green fill and yellow outlines), on top of countries, shaded in grey.
+
+```{r tmap_simple42, exercise = TRUE}
+
+
+
+```
+
+```{r tmap_simple42-solution, exercise.reveal_solution = TRUE}
+
+tm_shape(africa)+
+  tm_borders(fill = "grey95", col = "black")+
+tm_shape(pa)+
+  tm_polygons(fill = "darkgreen")
+  
+```
+
+`pa` has a column called IUCN_CAT which shows the IUCN category of the protected area. Remember this [category](https://en.wikipedia.org/wiki/Category:Protected_areas_by_World_Conservation_Union_category) shows how the area is managed/used and what kind of restrictions are in place for resource use. 
+
+Use the fill argument to colour the protected area polygons by IUCN category.
+
+
+```{r tmap_simple5, exercise = TRUE}
+
+
+
+```
+
+```{r tmap_simple5-solution, exercise.reveal_solution = TRUE}
+tm_shape(africa)+
+  tm_borders(fill = "grey95", col = "black")+
+tm_shape(pa)+
+  tm_polygons(fill = "IUCN_CAT")
+
+```
+
+Now make a map showing the protected areas and the giraffe range on top, with the country outlines below. The last lines of code represent layers that are plotted last (on top). You can use the `fill_alpha` argument when using simple colours for `fill` to control the degree of transparency. A value of 0 is transparent, and a value of 1 is full colour. You can use `NULL` for no colour, e.g. `col = NULL` will remove the borders. 
+
+What is the best way to show the three layers, think about which colours to use, and how much transparency. 
+
+```{r tmap_simple6, exercise = TRUE}
+
+```
+
+```{r tmap_simple6-solution, exercise.reveal_solution = TRUE}
+
+tm_shape(africa)+
+  tm_borders(fill = "grey95", col = "black")+
+tm_shape(pa)+
+  tm_polygons(fill = "darkblue", col = NULL)+
+tm_shape(giraffe_range)+
+  tm_polygons(fill = "brown", fill_alpha = 0.5, col = NULL)
+
+```
+
+Now try adding a scale bar with `tm_scalebar()` and a north arrow with `tm_scalebar()`. The default scale bar and north arrow can be used without any arguments in the functions. Have a look at the help file (see below) to change the type of north arrow, and its position on the page.
+
+```{r tmap_simple7, exercise = TRUE}
+
+```
+
+```{r tmap_simple7-solution, exercise.reveal_solution = TRUE}
+
+tm_shape(africa)+
+  tm_borders(fill = "grey95", col = "black")+
+tm_shape(pa)+
+  tm_polygons(fill = "darkblue", col = NULL)+
+tm_shape(giraffe_range)+
+  tm_polygons(fill = "brown", fill_alpha = 0.5, col = NULL)+
+tm_scalebar()+
+  tm_compass(type= "arrow", position = c("right", "top"), size = 1.5)
+
+
+```
+
+You can save the map to an image file, using `tmap_save()`. If you call this function after you've plotted a map, then you can just specify a path using `filename = ` to save the last plotted map to disk. There are also arguments to specify the image `height`, `width`, e.g. in `units = "mm"`, and its `dpi`.
+
+
+## Make a map in R
+
+Create a map for a report, showing last's week exercise to create a sample design for measuring soil characteristics under ancient trees on Keele campus.  
+
+To get more help with some of the basics of the `tmap` package, check out the package website [here](https://r-tmap.github.io/tmap/articles/basics_vv).  
+
+Alternatively, have a look at the help files of the above functions. You can use `?` before the function name to bring up the help file (e.g. `?tm_polygons`). Or press `F1` when your cursor is on the function name, or just type the function name into the help pane search bar (lower right window of Rstudio).
+
+
+
+## Credits 
+
+Data used for educational purposes:
+
+**Giraffe spatial data**
+NatureServe and IUCN (International Union for Conservation of Nature) 2018. *Giraffa camelopardalis*. The IUCN Red List of Threatened Species . Version 2018-2. https://www.iucnredlist.org.
+
+**Country administrative borders**
+GADM https://gadm.org/license.html
+
+**Protected areas**
+UNEP-WCMC and IUCN (2025), Protected Planet: The World Database on Protected Areas (WDPA)/ Database on other effective area-based conservation measures. March 2025. Cambridge, UK: UNEP-WCMC and IUCN. Available at: www.protectedplanet.net.
