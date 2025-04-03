@@ -1,5 +1,5 @@
 ---
-title: "GIS2 Making maps in R"
+title: "GIS3 Making maps in R"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -162,7 +162,7 @@ tm_shape(giraffe_range)+
 
 ```
 
-Now try adding a scale bar with `tm_scalebar()` and a north arrow with `tm_scalebar()`. The default scale bar and north arrow can be used without any arguments in the functions. Have a look at the help file (see below) to change the type of north arrow, and its position on the page.
+Now try adding a scale bar with `tm_scalebar()` and a north arrow with `tm_compass()`. The default scale bar and north arrow can be used without any arguments in the functions. Have a look at the help file (see below) to change the type of north arrow, and its position on the page.
 
 ```{r tmap_simple7, exercise = TRUE}
 

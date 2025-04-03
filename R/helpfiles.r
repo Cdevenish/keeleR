@@ -79,3 +79,23 @@ NULL
 #' learnr::run_tutorial("GIS1_Intro_to_GIS_in_R", package = "keeleR")
 #' }
 NULL
+#' @name GIS2_Using_rasters_in_R
+#' @title Using rasters in R
+#' @description
+#' A brief intro to using R for raster analysis
+#' @keywords Geographic Information Systems, GIS, spatial data analysis, raster
+#' @examples
+#' \dontrun{
+#' learnr::run_tutorial("GIS2_Using_rasters_in_R", package = "keeleR")
+#' }
+NULL
+#' @name GIS3_Making_maps_in_R
+#' @title Making maps in R
+#' @description
+#' A brief intro to making maps in R
+#' @keywords Geographic Information Systems, GIS, cartography
+#' @examples
+#' \dontrun{
+#' learnr::run_tutorial("GIS3_Making_maps_in_R", package = "keeleR")
+#' }
+NULL
