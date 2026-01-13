@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ### First steps in the console
 
-R is a programming environment, but it's also like a calculator. The following code calculates the answer to 1 + 1. Hit `Run Code` button, or use the keys `ctrl` + `enter` simultaneously, so that it performs the calculation.
+R is a programming environment, but it's also like a calculator. The following code calculates the answer to 1 + 1. Hit the `Run Code` button, or use the keys `ctrl` + `enter` simultaneously, so that it performs the calculation.
 
 
 ```{r two-plus-two, exercise=TRUE}
@@ -135,7 +135,7 @@ If we type in the name of our object, and press run, we will see its value in th
 
 Note that to assign the value of 10 to our new object `data1`, we have used an arrow pointing to the left ` <- `. This symbol is written as the `<` (less than) sign followed by the `-` (minus) sign without any spaces.
 
-Your turn! Create an object called `data4` and give it a value of 25. Run your code first and check it's working before you submit your answer.
+Your turn! Create an object called `data4` and give it a value of 25. Run your code and check that it's working by looking at the value assigned to `data4`.
 
 ```{r objects3, exercise = TRUE}
 
@@ -160,7 +160,7 @@ data4 <- 25
 
 The `iris` data set was already in R. However, most of the time, we will collect data, organise it in excel, and then import it into R. One of the easiest ways to do this is to save the excel spreadsheet as a `.csv` file and then import this.
 
-*Here we have some data from a survey of oak galls on Penduculate and Sessile oaks, surveyed at upland and lowland elevations in the UK.*
+*Here we have some data from a survey of oak galls on Pedunculate and Sessile oaks, surveyed at upland and lowland elevations in the UK. The data represent the number of galls found on trees of different heights (see below for full description).*
 
 This is the data set in excel:
 
@@ -348,7 +348,7 @@ You can create a new script in the file menu on RStudio. Before we work on a scr
 
 ### Getting to know R and RStudio
 
-The space where you just ran the code is called the Console. The console is one of the four windows we generally use with RStudio. RStudio is another piece of software that many people use to run R (R is actually another piece of software that also works on its own, however, RStudio makes certain aspects easier). 
+RStudio is another piece of software that many people use to run R in. R is actually a separate software that also works on its own, however, RStudio makes certain aspects easier. 
 
 *Here's a screen shot of the default RStudio layout that you will see if you have just installed it.*
 
@@ -374,7 +374,7 @@ This is the console. Here you will see the results of your analysis, but you gen
 $\\$
 This window shows your 'environment', that is all the objects or functions you have loaded at the moment (we'll learn about those later). It's important that this is always clear at the beginning of a session. Remember to clear everything out before you start.
 
-#### Bottom right: **Plots/Help window**
+#### Bottom right: **Files/Plots/Help window**
 ![](images/rstudio_screenshot_window4.png){width=60%}
 $\\$
 This is where you will see plots or help files for functions. You can navigate between these windows using the tabs at the top. You can also see your folders and files here, like in a windows explorer window.
@@ -389,7 +389,7 @@ A simple project structure consists of a project folder (the working directory) 
 ![](images/project_structure.png){width=60%}  
 
 $\\$
-See [The Project Tier protocol](https://www.projecttier.org/tier-protocol/protocol-4-0/root/) for a more detailed structure, but the above is good for us for now.
+See [The Project Tier protocol](https://www.projecttier.org/tier-protocol/protocol-4-0/root/) for a more detailed structure, but the above is good for now.
 
 The working directory is the top (or root) folder. You can check what your current working directory is in R. Run this code to see. Note that this is an unusual location for a working directory as we are in a tutorial.
 
@@ -399,24 +399,16 @@ getwd()
 
 ```
 
-You can set a working directory using the `setwd()` function. Put the path to the working directory inside the function, inside quotes. e.g. "C:/Users/xyh76/OneDrive - University of Keele/Documents/MSc_Bio/Module_40125/R-classes/project1".
+You can set a working directory using the `setwd()` function. Put the path to the working directory inside the function, inside quotes. You can try this later when we set up a project on your computers outside this tutorial.
 
 
-To avoid having to set the working directory each time, you can create a project in RStudio inside your working directory. As well as other advantages of working with projects (e.g. keeping different analyses separate, and saving your open scripts each time), RStudio will automatically set your working directory each time you open your saved project.
+To avoid having to set the working directory each time, you can create a project in RStudio inside your project folder. As well as other advantages of working with projects (e.g. keeping different analyses separate, and saving your open scripts each time), RStudio will automatically set your working directory each time you open your saved project.
 
-We will create a working directory and a project structure after this tutorial. But first, try working from a script, instead of from within a tutorial.
+We will create a working directory and a project structure after this tutorial. But first, try working from a script in RStudio instead of working within this tutorial.
 
 ### My first script
 
-Copy this code
-
-```{r getScript, exercise=TRUE}
-
-openScript(script = "my_first_script.r")
-
-```
-
-and then stop the tutorial by closing the window (x in top right corner). Paste the code into the console and run it! Your first script should open. Before you do anything else save it on your computer. Then continue to follow the instructions in the script.
+Copy this code: `openScript(script = "my_first_script.r")` and then stop the tutorial by closing the window (x in top right corner). Paste the code into the console in RStudio and run it! Your first script should open. Before you do anything else save it on your computer in your class folder. Then continue to follow the instructions in the script.
 
 If that doesn't work, download the "my_first_script.r" from the KLE and continue in Rstudio, as above.
 

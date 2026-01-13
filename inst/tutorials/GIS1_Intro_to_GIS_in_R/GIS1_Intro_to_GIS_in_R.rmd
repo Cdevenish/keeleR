@@ -178,6 +178,8 @@ However, there are other ways to plot spatial information, especially for cartog
 
 #### **Importing spatial data into R**
 
+##### From a shapefile
+
 To import data from a shapefile (or other spatial format, e.g. .kml, .gpx), use the `st_read()` function. For most formats, you can simply use the path to your file. Remember, for shapefiles, these are made up multiple components, they all need to be in the same folder, but you only need to include the .shp component in your `st_read()` function.
 
 
@@ -201,7 +203,53 @@ keele_roads
 
 ```
 
-##### **Transforming between Coordinate Reference Systems**
+##### From a data frame in R (with coordinate columns)
+
+You can also convert a data frame in R (that has columns containing coordinates) into a spatial point data frame. You may have data in a text file (e.g. `.csv`) that you will need to import into R first as a normal data frame. Add code to look at the data frame - which columns contain the coordinates?
+
+```{r import_csv, exercise = TRUE}
+
+# Read in data from text file
+pts_df <- read.csv("data/point_records.csv")
+
+```
+
+```{r import_csv, exercise = TRUE}
+
+# Read in data from text file
+pts_df <- read.csv("data/point_records.csv")
+
+# look at data - which columns contain the coordinates?
+head(pts_df)
+
+```
+
+Now you can use the sf function `st_as_sf()` to convert the data frame to a spatial dataframe. The `coords` argument tells sf which columns contain the coordinates. **Make sure you spell the column names exactly as they are in the data frame!** And don't forget the **coordinate reference system**
+
+```{r convert_csv_sf, exercise = TRUE}
+
+# Convert to sf data frame (use coords argument to name the columns with the coordinates)
+pts_sf <- st_as_sf(pts_df, 
+                    coords = c("lon","lat"),
+                    crs = 4326) # don't forget to say what the coordinate reference system is.
+
+```
+
+Now plot the point data you have just imported:
+
+```{r plot_csv_sf, exercise = TRUE}
+
+
+```
+
+
+```{r plot_csv_sf-solution, exercise.reveal_solution = TRUE}
+
+plot(pts_sf)
+
+```
+
+#### **Transforming between Coordinate Reference Systems**
 
 The veteran trees shapefile is in WGS 1984 geographic coordinates. It would be more useful to have this as British National Grid, so that it is compatible with the other spatial data we are going to use later. We can use the `st_transform()` function to convert between coordinate reference systems (CRS). 
 
@@ -229,7 +277,7 @@ The first set of points is called `pts`. Print the `pts` object and then plot it
 
 ```
 
-```{r points1-solution}
+```{r points1-solution, exercise.reveal_solution = TRUE}
 
 pts
 plot(pts, pch = 16)
