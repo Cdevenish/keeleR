@@ -6,7 +6,9 @@ runtime: shiny_prerendered
 
 ```{r setup, include=FALSE}
 library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE)
 ```
 
 
@@ -50,7 +52,7 @@ str(tBird) # Numeric and categorical (factor) data types
 
 ```
 
--2.3 Now plot the data. First plot just the weight column and check for any outliers.
+-2.3 Now plot the data. First plot just the weight column and check for any outliers (this kind of plot is sometimes known as an index plot).
 
 ```{r example-t-test-plot1, exercise=TRUE, exercise.setup = "example-t-test-import"}
 # Index plots - any obvious outliers?
@@ -146,7 +148,7 @@ tapply(tBird$weight, tBird$sex, sd)
 
 ```
 
--6.2  Make a plot the data for your report
+-6.2  Make a plot of the data for your report
 
 Do a plot with all the correct axis labels (including units), axis limits, etc.
 ```{r example-t-test-plot, exercise=TRUE, exercise.setup = "example-t-test-import"}
@@ -169,15 +171,15 @@ Now it's your turn! You have two data sets on the KLE. Download the .csv files a
 **1 Subspecies conservation**  
 
 
-You are working on the conservation of a threatened lizard in the Alps, in Europe. There are believed to be two subspecies, *variatus* and *minimalis*. *variatus* is much more common than *minimalis*, a fact which might influence potential conservation strategies. You want to investigate ecological differences between the subspecies. Is there a difference in habitat use at different elevations (m above sea level) between the two subspecies?  
+You are working on the conservation of a threatened lizard in the Alps, in Europe. There are believed to be two subspecies, *A. variatus* and *A. minimalis*. *A. variatus* is much more common than *A. minimalis*, a fact which might influence potential conservation strategies. You want to investigate ecological differences between the subspecies. Is there a difference in altitudinal distribution between the two subspecies?  
 
-Download `subspecies_elevation_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
+Download `subspecies_elevation_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question! The data contains the elevation of different occurrence records for the two subspecies.
 
 
 **2 Protected area effectiveness**   
 
 
-A study has looked at effectiveness of protected area management and classified 100 protected areas as having high or low management effectiveness. You are interested to know whether the cost of implementing management activities at each area (in GBP£/ha) is related to management effectiveness.
+A study has looked at effectiveness of protected area management and classified 100 protected areas as having high or low management effectiveness. You are interested to know whether the cost of implementing management activities at each area (in GBP(£)/ha) is related to management effectiveness.
 
 Download `protected_area_management_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
 
@@ -212,7 +214,7 @@ head(iris)
 
 What does the function tell you? Note that we are looking at a global summary, that is, across all species.
 
-```{r iris_summary-solution, exercise = TRUE, exercise.reveal_solution = TRUE}
+```{r iris_summary-solution, exercise.reveal_solution = TRUE}
 
 summary(iris)
 
@@ -261,7 +263,7 @@ We can also do a formal test for normality with the `shapiro.test` function. It 
 **H0 There is NO significant difference between the distribution of my data and a normal distribution**  
 **HA There IS a significant difference between the distribution of my data and a normal distribution**  
 
-Remember that if the `p-value` is < 0.05, then we can reject the Null Hypothesis. Here is the code for the shapiro test. Frist we will test all the data together:
+Remember that if the `p-value` is < 0.05, then we can reject the Null Hypothesis. Here is the code for the shapiro test. First we will test all the data together:
 
 ```{r iris_shapiro, exercise = TRUE}
 
@@ -299,7 +301,7 @@ tapply(iris$Sepal.Width, iris$Species, shapiro.test)
 
 ```
 
-The other condition is that the variance of each group is also similar. We can use the Bartlett Test to evaluate whether the variance of the sepal widths for each species is similar. Here is the code for the Bartlett Homogeneity of Variance test on the sepal width data:
+The other condition is that the variance of each group is also similar. We can use the Bartlett Test to evaluate whether the variance of the sepal widths for each species is similar (the boxplot you made can also help evaluate this). Here is the code for the Bartlett Homogeneity of Variance test on the sepal width data:
 
 ```{r iris_bartlett, exercise = TRUE}
 
@@ -325,9 +327,9 @@ quiz(
 )
 ```
 
-So now we can conclude that we can use the ANOVA test, as our data is both normally distributed, without significant differences between the variances of each group.
+We now conclude that we can use the ANOVA test, as our data is normally distributed and there are no significant differences between the variances of each group.
 
-5. Now we can perform the ANOVA test (at last...). Here is the code for an ANOVA test. Note that we have assigned the result of the test to an object called `aov1`.
+5. At last we can perform the ANOVA test. Here is the code for an ANOVA test. Note that we have assigned the result of the test to an object called `aov1`.
 
 ```{r iris_anova, exercise = TRUE}
 
@@ -364,7 +366,7 @@ mc <- glht(aov1, linfct = mcp(Species = "Tukey"))
 
 Now use the `summary()` function again to look at where those differences lie:
 
-```{r iris_post_summary, exercise = TRUE,exercise.setup = "iris_anova"}
+```{r iris_post_summary, exercise = TRUE,exercise.setup = "iris_post"}
 
 
 ```
@@ -402,7 +404,7 @@ Using an ANOVA we found a significant difference between the mean sepal widths o
 
 **Invertebrate species richness across four habitats**
 
-You have measured invertebrate species richness across four habitat from 20 samples within each habitat. You are interested in finding out whether there is a significant difference in species richness across the habitats, and if so, which habitats are different.
+You have measured invertebrate species richness across four different habitats (broadleaf woodland, conifer woodland, grassland, park) from 20 samples within each habitat. You are interested in whether there is a significant difference in species richness across the habitats, and if so, which habitats are different.
 
 Download `species_habitat_data.csv` from the Data folder on this week's KLE page, follow the analysis protocol and answer the question!
 
