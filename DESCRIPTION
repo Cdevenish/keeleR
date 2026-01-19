@@ -6,7 +6,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-5249-0844"))
 Description: This package primarily houses tutorials built with the learnR package. See contents() for a list of these.
 License: GPL (>= 3)
-Imports: learnr, shiny (>= 1.0.0), bslib, vegan, patchwork, ggplot2, sf, terra, predicts, rJava, knitr, geodata
+Imports: learnr, shiny (>= 1.0.0), bslib, vegan, patchwork, ggplot2, sf, terra, predicts, rJava, knitr, geodata, multcomp
 Depends: R (>= 3.5.0)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
