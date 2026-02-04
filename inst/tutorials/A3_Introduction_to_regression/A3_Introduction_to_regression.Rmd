@@ -8,7 +8,9 @@ runtime: shiny_prerendered
 library(learnr)
 library(shiny)
 library(bslib)
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE, 
+                      message = FALSE)
 
 load("data/cherry_trees.rdata")
 lm1 <- lm(Volume ~ Diameter, data = tree_data)
@@ -21,7 +23,11 @@ lm1 <- lm(Volume ~ Diameter, data = tree_data)
 
 #### Regression lines as models
 
-Regression analysis is often called statistical modelling. What does this mean? A model is just a convenient, usually simplified, representation of reality. A regression model can be as simple as drawing a line of best fit through a scatter plot. Why is this useful? For example, we could use a regression model to predict the volume of a tree if given its diameter at breast height. This might be a quick way of estimating carbon storage in trees by just measuring the diameter at breast height, which is much easier than measuring tree volume. Suppose that we have some previous data, or that we'd carried out a pilot project to obtain actual data on tree volume and diameter, then we could plot the relationship between volume and diameter like this:
+Regression analysis is often called statistical modelling. What does this mean? A model is just a convenient, usually simplified, representation of reality. A regression model can be as simple as drawing a line of best fit through a scatter plot.  
+  
+Why is this useful?  
+  
+For example, we could use a regression model to predict the volume of a tree if given its diameter at breast height. This might be a quick way of estimating carbon storage in trees by just measuring the diameter at breast height, which is much easier than measuring tree volume. Suppose that we have some previous data, or that we'd carried out a pilot project to obtain actual data on tree volume and diameter, then we could plot the relationship between volume and diameter like this:
 
 ```{r treeplot1, echo = FALSE, out.width = "70%"}
 suppressWarnings(suppressPackageStartupMessages(library(ggplot2)))
