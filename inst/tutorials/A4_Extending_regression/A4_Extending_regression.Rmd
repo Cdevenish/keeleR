@@ -18,9 +18,9 @@ forest <- read.csv("./data/bio_index.csv")
 
 ## Regression with more than one predictor
 
-Regression analysis with multiple predictors (or independent variables) follows the same analysis steps as before. One of the main differences is how you can visualise your analysis, both during the exploratory stage, as well as when presenting your results. With any more than two variables, it's difficult to visualise with a scatterplot.
+Regression analysis with multiple predictors (or independent variables) follows the same analysis steps as before and results in similar outputs. One difference is how you can visualise your analysis, both during the exploratory stage, as well as when presenting your results. With any more than two variables, it's difficult to visualise all the predictors with a scatterplot (but you can use pairs of variables in multiple plots). 
 
-Another difference is in the output. You will see a coefficient, standard error and p-value for each predictor you include in the model. First, look at the overall result of the model, then at which of the individual predictors is significant.
+Another difference is in the output. You will see a coefficient, standard error and p-value for each predictor you include in the model. First, check the overall result of the model, then you can look at how each of the individual predictors affects the response variable.
 
 ### Example workflow
 
@@ -36,7 +36,7 @@ We will use a regression analysis to evaluate which of the above is a significan
 
 -2 *Check and explore your data*
 
-As always, check your data have imported correctly by using the `head()` and `str()` functions. Do this below, after running the code to import the data.
+As before, check your data have imported correctly by using the `head()` and `str()` functions. Do this below, after running the code to import the data.
 
 ```{r import_data, exercise = TRUE}
 
@@ -53,7 +53,7 @@ str(forest)
 
 ```
 
-Use the summary function on the whole data.frame to see the range and median values of your data. This is also a useful check on your data. Some data should be within certain values (e.g. percentages should be between 0 and 100).#
+Use the summary function on the whole data.frame to see the range and median values of each numeric variable. This is also a useful check on your data. Some data should be within certain values (e.g. percentages should be between 0 and 100).
 
 ```{r summary_check, exercise = TRUE}
 
@@ -118,7 +118,7 @@ As we have a numeric response and we think that there might be a linear relation
 
 
 -4 *Run the test*  
-The code for a regression with multiple predictors is very similar to a regression with just one. We add the predictors to our *formula* argument:
+The code for a regression with multiple predictors is very similar to a regression with just one predictor. We add the predictors to our *formula* argument:
 `bio_index ~ indicator_spp + cover + distance`. Then, we tell R where to find our data frame with the *data* argument: `data = forest`. Use these to complete the `lm()` function below. As before, we will assign the results of the regression to an object, for convenience.
 
 ```{r make_mod, echo = FALSE}
@@ -257,14 +257,14 @@ scale(forest$distance)
 ```
 Look at the 10th value - it's almost 0. This means our 10th value in the `forest$distance` vector is close to the mean. Note that we can use the square brackets to show just a single value. 
 
-```{r scaling2, exercise - TRUE}
+```{r scaling2, exercise = TRUE}
 
 forest$distance[10]
 mean(forest$distance)
 
 ```
 
-Look at the 12th value of the *scaled* `forest$distance` vector. It's value is almost -1. This means it's one standard deviation below the mean. Use R to calculate this value in the code box below.
+Look at the 12th value of the *scaled* `forest$distance` vector. It's value is almost -1. This means its real value is almost one standard deviation below the mean. Use R to calculate this value in the code box below.
 
 ```{r scaling3, exercise = TRUE}
 
@@ -280,22 +280,15 @@ sd(forest$distance)
 ```
 
 ```{r scaling3-hint-2}
-# Use mean() to get the mean......
+# Use mean() to get the mean...
 
 
 ```
 
 ```{r scaling3-hint-3}
 
-# Now subtract the sd() from the mean().....
+# Now subtract the sd() from the mean() ...
 
-
-```
-
-```{r scaling3-hint-4}
-
-# Now subtract the sd() from the mean().....
-mean(forest$distance) - sd(forest$distance)
 
 ```
 
@@ -305,6 +298,14 @@ Now check your answer with the *unscaled* value. Remember, it's the 12th value o
 ```{r scaling4, exercise = TRUE}
 forest$distance[12]
 mean(forest$distance) - sd(forest$distance)
+
+```
+
+Remember that the scaled value is the value minus the mean, divided by the sd.
+```{r scaling5, exercise = TRUE}
+# e.g. for the 12th value of forest$distance:
+
+(forest$distance[12] - mean(forest$distance)) /sd(forest$distance)
 
 ```
 
@@ -319,9 +320,9 @@ Use the forest data (download these from the KLE) and re-run the model from the 
 
 ## Regression with a binary response - logistic regression
 
-Regression analyses can also be implemented with binary or count response variables. Here we will begin with binary (e.g. presence or absence data) as the response. With binary (or logistic) regression, instead of predicting the value of our response, we are predicting the probability of an outcome, so in this case, the probability of species presence given known values of our predictors.  
+Regression analyses can also be implemented with binary or count response variables. Here we will begin with binary (e.g. presence or absence data) as the response. With binary (or logistic) regression, instead of predicting the value of our response, we are predicting the probability of an outcome, so in our first example, the probability of species presence given known values of our predictors.  
 
-We have a study looking at factors influencing presence of a lizard species: mean annual temperature and percentage cover of vegetation (from 10 m diameter vegetation plots). So with this analysis, we could ask which predictors are significant predictors of lizard presence, or which could ask what is the probability of a lizard occurring in a habitat with certain values of our predictors.
+We have a study looking at factors influencing presence of a lizard species: mean annual temperature and percentage cover of vegetation (from 10 m diameter vegetation plots). So with this analysis, we could ask which predictors have a significant influence on lizard presence, or we could ask what is the probability of a lizard occurring in a habitat with certain values of our predictors.
 
 The interpretation of the results is similar to linear regression, although the regression equation is different. In this tutorial we will focus primarily on interpreting the results.
 
@@ -411,7 +412,7 @@ chisq_df <- glm1$df.null - glm1$df.residual
 
 As you can see, the p-value is < 0.05, so we can conclude that our model is better than the null model.
 
-The **pseudo R^2^**, as in the linear model, is how much variability in the data is explained by the model. The deviance is a measure of the unexplained variance of the model. It is calculated from the difference between the observed and predicted values. If the model explains more variability than the null model, then you would expect the (residual) deviance to be less than the null deviance (check this on the model output). The explained deviance is the null deviance - the residual deviance. The R^2^ is then calculated as the $explained~deviance / null~deviance$:
+The **pseudo R^2^**, as in the linear model, represents how much variability in the data is explained by the model. The deviance is a measure of the unexplained variance of the model. It is calculated from the difference between the observed and predicted values. If the model explains more variability than the null model, then you would expect the (residual) deviance to be less than the null deviance (check this on the model output). The explained deviance is the null deviance - the residual deviance. The R^2^ is then calculated as the $explained~deviance / null~deviance$:
 
 
 ```{r r2_glm, exercise = TRUE, exercise.setup = "binary_glm"}
