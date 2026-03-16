@@ -169,7 +169,7 @@ Here we plot a simple layer of roads on Keele campus, and then add the veteran t
 
 ```{r sf_plot_add, exercise = TRUE}
 
-plot(st_geometry(roads_Keele), col = "black")
+plot(st_geometry(roads), col = "black")
 plot(st_geometry(vtrees), pch = 16, add = T, col = "darkgreen")
 
 ```
@@ -195,11 +195,11 @@ keele_roads <- st_read("data/keele_roads.shp")
 
 Print the `keele_roads` object and look at the structure of the data frame, the coordinate system and the extent.
 
-```{r print_sf, exercise = TRUE}
+```{r print_sf, exercise = TRUE, exercise.setup = "import_sf"}
 
 ```
 
-```{r print_sf-solution}
+```{r print_sf-solution, exercise.reveal_solution = TRUE}
 
 keele_roads
 
@@ -216,7 +216,7 @@ pts_df <- read.csv("data/point_records.csv")
 
 ```
 
-```{r import_csv, exercise = TRUE}
+```{r import_csv-solution, exercise.reveal_solution = TRUE}
 
 # Read in data from text file
 pts_df <- read.csv("data/point_records.csv")
@@ -228,7 +228,7 @@ head(pts_df)
 
 Now you can use the sf function `st_as_sf()` to convert the data frame to a spatial dataframe. The `coords` argument tells sf which columns contain the coordinates. **Make sure you spell the column names exactly as they are in the data frame!** And don't forget the **coordinate reference system**
 
-```{r convert_csv_sf, exercise = TRUE}
+```{r convert_csv_sf, exercise = TRUE, exercise.setup = "import_csv"}
 
 # Convert to sf data frame (use coords argument to name the columns with the coordinates)
 pts_sf <- st_as_sf(pts_df, 
@@ -239,7 +239,7 @@ pts_sf <- st_as_sf(pts_df,
 
 Now plot the point data you have just imported:
 
-```{r plot_csv_sf, exercise = TRUE}
+```{r plot_csv_sf, exercise = TRUE, exercise.setup = "convert_csv_sf"}
 
 
 ```
@@ -524,7 +524,7 @@ cHull_pts <- st_convex_hull(st_union(pts))
 
 Now plot the convex hull and then add the points.
 
-```{r chull2_plot, exercise = TRUE}
+```{r chull2_plot, exercise = TRUE, exercise.setup = "chull2"}
 
 
 ```
@@ -572,7 +572,7 @@ plot(st_geometry(intsct), col = "grey", add = T)
 
 What is total area of the overlapping segments?
 
-```{r intct_area, exercise = TRUE}
+```{r intct_area, exercise = TRUE, exercise.setup = "intct1"}
 
 
 ```
@@ -605,7 +605,7 @@ plot(st_geometry(circle3), add= TRUE)
 
 We can use the `st_intersection()` to extract the point inside the circle.
 
-```{r clip_extract, exercise = TRUE}
+```{r clip_extract, exercise = TRUE, exercise.setup = "clip1"}
 
 pts_extract <- st_intersection(rnd_pts, circle3)
 
