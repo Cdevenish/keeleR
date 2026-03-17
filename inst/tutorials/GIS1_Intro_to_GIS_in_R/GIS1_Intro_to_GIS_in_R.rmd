@@ -687,7 +687,7 @@ Create a new project in R studio (use a new instance of R studio if you want to 
 **Import data**   
 1. Install and/or load the appropriate libraries  
 
-2. Import the veteran tree points **vet_trees.shp**, CEH landcover polygons **ceh_lc23_ds.shp** and road lines **OS_vml_road_centreline.shp** shapefiles into R as individual sf objects.  
+2. Import the veteran tree points **vtrees.shp**, CEH landcover polygons **ceh_lc23_ds.shp** and road lines **OS_vml_road_centreline.shp** shapefiles into R as individual sf objects.  
 
 3. Check the sf dataframes, and make sure all have same coordinate system.   
 
@@ -710,7 +710,7 @@ Create a new project in R studio (use a new instance of R studio if you want to 
 
 12. Sample 12 points in total from the woodland area (minus the buffered roads and veteran trees) that you saved in (10). 
 
-13. Bind (use `rbind()`) the random points from (11) and (12) into a new object, create a column and label with the type of point (veteran tree sample / non veteran sample) and then save to a shapefile and/or R object on disk.
+13. Combine (use `c()`) the random points from (11) and (12) into a new object, create an sf `data.frame` with a column for the type of point (veteran tree sample / non veteran sample) and then save to a shapefile and/or R object on disk.
 
 
 ##### Extension question
