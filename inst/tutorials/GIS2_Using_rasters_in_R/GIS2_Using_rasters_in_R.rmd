@@ -40,7 +40,7 @@ citation(package = "terra")
 
 ```
 
-The function to import or create rasters is `rast`. Note that when you start to use multiple packages in scripts, it can help to keep track of where functions are coming from by using the package name followed by two colons before the function name, e.g. `terra::rast()`. However, it's optional.
+The function to import or create rasters is `rast`. Note that when you start to use multiple packages in scripts, it can help to keep track of where functions are coming from by using the package name followed by two colons before the function name, e.g. `terra::rast()`. However, it's optional as long as you load the library first (`library(terra)`).
 
 If you follow a project structure, with a working directory, and folders within this for your inData, and outData, then you can place your raster files (e.g. tif files) in the inData folder (or a gis subdivision of this) and access them from your project. For example, if we have these rasters in our gis folder inside the data (or inData) folder like this:
 
@@ -231,7 +231,7 @@ What columns are present in the result?
 
 It would be useful to add on the original columns from the `sp_locations` data frame so that we can use these in further analysis. 
 
-As we know that the `sp_data` are in the same order as `sp_locations` we can join the two data sets together with `cbind` (c for column bind). However, it is **much** safer, and **better practice** to use lookup functions (e.g. `dplyr::left_join`) for this.
+As we know that the `sp_data` are in the same order as `sp_locations` we can join the two data sets together with `cbind` (c for column bind). However, it is **much** safer, and **better practice** to use lookup functions (e.g. `dplyr::left_join`) for this with a common id column.
 
 ```{r add_cols, exercise = TRUE, exercise.setup = "extract_pts"}
 
@@ -396,7 +396,7 @@ plot(st_geometry(hare_sf))
 
 Can you plot the points on top of the raster? You can use `add=TRUE` in the second plot call.
 
-Now continue in a project in R studio, copy the above code in, make comments, and then complete the code to find the mean elevation (and standard deviation) for both species of hare.  
+Now continue in a project in R studio, download the same data as above from the KLE, copy the code in, make comments, and then complete the code to find the mean elevation (and standard deviation) for both species of hare.
 
 Create a map and a graphic to show your results!
 
